@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: RegisterPage(),
+      home: ProfilePage(),
     );
   }
 }
@@ -221,3 +221,81 @@ class _RegisterPageState extends State<RegisterPage>{
   }
 }
 
+class ProfilePage extends StatelessWidget{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey[400],
+        title: Center(
+          child: Text('Profile page'),
+        ),
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            SizedBox(height: 100),
+            Center(
+              child: Image.asset('lib/assets/profile_image.webp',
+              width: 150,
+              height: 150,),
+            ),
+            SizedBox(height: 50),
+            ElevatedButton(
+                onPressed: (){
+                  //go to information page
+                },
+                child: Text('My information',
+                style: TextStyle(
+                  fontSize: 18,
+                ),),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueGrey[300],
+                  minimumSize: Size(250, 50),
+                ),),
+            SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: (){
+                  //go to favorites page
+                },
+                child: Text('Favorites',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),),
+                style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey[300],
+                minimumSize: Size(250, 50),
+            ),),
+            SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: (){
+                  //go to comments page
+                },
+                child: Text('My comments',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),),
+                style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey[300],
+                minimumSize: Size(250, 50),
+            ),),
+            SizedBox(height: 20),
+            ElevatedButton(
+                onPressed: (){
+                  //log out back to home page
+                },
+                child: Text('Log out',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),),
+                style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueGrey[300],
+                minimumSize: Size(250, 50),
+              ),),
+          ],
+        ),
+      ),
+    );
+  }
+}
