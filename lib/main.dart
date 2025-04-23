@@ -13,15 +13,17 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: HomePage(),
+      home: LoginPage(),
     );
   }
 }
 
 class HomePage extends StatelessWidget {
+  const HomePage({super.key});
   @override
   Widget build (BuildContext context){
     return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -72,6 +74,83 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class LoginPage extends StatefulWidget{
+  const LoginPage({super.key});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
+      appBar: AppBar(
+        backgroundColor: Colors.blueGrey[400],
+        title: Center(
+          child: Text('LOGIN PAGE'),)
+      ),
+      body: Center(
+
+        child: Container(
+          width: 300,
+            child: Column(
+                children: [
+                  SizedBox(height: 150),
+                  Text('Welcome Back!',
+                  style:
+                  TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                  ),),
+                  SizedBox(height: 100),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                    ),
+                  ),
+                  TextField(
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: () {
+                        //go to normal page
+                      }, child: Text('LOGIN')),
+                  TextButton(
+                      onPressed: (){
+                        //reset password
+                      },
+                      child: Text(
+                        'Forgot password?',
+                        style: TextStyle(
+                          decoration: TextDecoration.underline,
+                        ),
+                      )),
+                  SizedBox(height: 200),
+                  Text("You don't have an account?"),
+                  TextButton(
+                      onPressed: (){
+                        //register page
+                      }, 
+                      child: Text('Sign up',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                      ),)
+                  )
+                ]
+            )
+        )
+      ),
+
+
+
     );
   }
 }
