@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: LoginPage(),
+      home: RegisterPage(),
     );
   }
 }
@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                 fontSize: 20,
               ),
             ),
-            SizedBox(height: 100, ),
+            SizedBox(height: 100),
             Center(
               child: Image.asset('lib/assets/erasmus.jpg'),
             ),
@@ -93,10 +93,9 @@ class _LoginPageState extends State<LoginPage>{
       appBar: AppBar(
         backgroundColor: Colors.blueGrey[400],
         title: Center(
-          child: Text('LOGIN PAGE'),)
+          child: Text('LOGIN PAGE'))
       ),
       body: Center(
-
         child: Container(
           width: 300,
             child: Column(
@@ -154,3 +153,71 @@ class _LoginPageState extends State<LoginPage>{
     );
   }
 }
+
+class RegisterPage extends StatefulWidget{
+  const RegisterPage({super.key});
+
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage>{
+  @override
+  Widget build(BuildContext context){
+    return Scaffold(
+      backgroundColor: Colors.blueGrey[100],
+      appBar: AppBar(
+          backgroundColor: Colors.blueGrey[400],
+          title: Center(
+            child: Text('REGISTER PAGE')
+          )
+      ),
+      body: Center(
+        child: Container(
+          width: 300,
+            child: Column(
+              children: [
+                SizedBox(height: 100),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Surname',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Username (Email)',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  decoration: InputDecoration(
+                    labelText: 'Confirm password',
+                  ),
+                ),
+                SizedBox(height: 100),
+                ElevatedButton(
+                    onPressed: (){
+                      // go to profile page
+                    },
+                    child: Text('Sign up'))
+              ],
+            ),
+        )
+      ),
+    );
+  }
+}
+
