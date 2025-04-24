@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: ProfilePage(),
+      home: InformationPage(),
     );
   }
 }
@@ -300,6 +300,44 @@ class ProfilePage extends StatelessWidget{
           ],
         ),
       ),
+    );
+  }
+}
+
+
+class InformationPage extends StatefulWidget{
+  const InformationPage({super.key});
+
+  @override
+  State<InformationPage> createState() => _InformationPageState();
+}
+
+class _InformationPageState extends State<InformationPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Colors.blueGrey[100],
+        appBar: AppBar(
+          backgroundColor: Colors.blueGrey[400],
+          title: Center(
+              child: Text('My information')),
+        ),
+        body: Center(
+          child: Column(
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    //modify the info
+                  },
+                  child: Text('Modify',
+                    style: TextStyle(
+                      fontSize: 20,
+                    ),
+                  )
+              )
+            ],
+          ),
+        )
     );
   }
 }
