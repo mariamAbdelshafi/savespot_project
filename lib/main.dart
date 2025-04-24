@@ -5,6 +5,8 @@ void main() {
 
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -96,7 +98,7 @@ class _LoginPageState extends State<LoginPage>{
           child: Text('LOGIN PAGE'))
       ),
       body: Center(
-        child: Container(
+        child: SizedBox(
           width: 300,
             child: Column(
                 children: [
@@ -173,7 +175,7 @@ class _RegisterPageState extends State<RegisterPage>{
           )
       ),
       body: Center(
-        child: Container(
+        child: SizedBox(
           width: 300,
             child: Column(
               children: [
@@ -222,6 +224,8 @@ class _RegisterPageState extends State<RegisterPage>{
 }
 
 class ProfilePage extends StatelessWidget{
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -246,53 +250,53 @@ class ProfilePage extends StatelessWidget{
                 onPressed: (){
                   //go to information page
                 },
-                child: Text('My information',
-                style: TextStyle(
-                  fontSize: 18,
-                ),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blueGrey[300],
                   minimumSize: Size(250, 50),
-                ),),
+                ),
+                child: Text('My information',
+                style: TextStyle(
+                  fontSize: 18,
+                ),),),
             SizedBox(height: 20),
             ElevatedButton(
                 onPressed: (){
                   //go to favorites page
                 },
-                child: Text('Favorites',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),),
                 style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueGrey[300],
                 minimumSize: Size(250, 50),
-            ),),
+            ),
+                child: Text('Favorites',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),),),
             SizedBox(height: 20),
             ElevatedButton(
                 onPressed: (){
                   //go to comments page
                 },
-                child: Text('My comments',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),),
                 style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueGrey[300],
                 minimumSize: Size(250, 50),
-            ),),
+            ),
+                child: Text('My comments',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),),),
             SizedBox(height: 20),
             ElevatedButton(
                 onPressed: (){
                   //log out back to home page
                 },
-                child: Text('Log out',
-                  style: TextStyle(
-                    fontSize: 18,
-                  ),),
                 style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blueGrey[300],
                 minimumSize: Size(250, 50),
-              ),),
+              ),
+                child: Text('Log out',
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),),),
           ],
         ),
       ),
