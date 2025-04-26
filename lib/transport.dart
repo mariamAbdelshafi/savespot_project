@@ -1,9 +1,13 @@
-import 'package:savespot_project/vehicle_enum.dart';
+import 'package:savespot_project/comment.dart';
+import 'package:savespot_project/picture.dart';
+import 'package:savespot_project/enums/vehicle_enum.dart';
 
 class Transport{
   EVehicle? vehicleType;
   int? price;
   String? description;
-  //List<String>? pictureUrlList; // generic class yapılabilir şimdilik dursun id ile
+
+  List<Picture>? pictureList; 
+  List<Comment>? commentList;
 
 }
