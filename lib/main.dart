@@ -12,73 +12,117 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SaveSpot',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: InformationPage(),
+      home: StartPage(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class StartPage extends StatelessWidget {
+  const StartPage({super.key});
   @override
   Widget build (BuildContext context){
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+      backgroundColor: Colors.brown[50],
+      body:
+        Column(
           children: [
             SizedBox(height: 100),
-            Text(
-                'SaveSpot',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
+            Center(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset('lib/assets/boussole.jpg',
+                width: 300,
+                height: 300,
+                )
               ),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 30),
             Text(
-              textAlign: TextAlign.center,
-              'Are you a new student in Turkey?\n'
-                  'Then you are in the right place!\n'
-                  'Find all the good spots, and all you need in SaveSpot!',
+              'SaveSpot',
               style: TextStyle(
-                fontSize: 20,
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.brown[800]
               ),
             ),
-            SizedBox(height: 100),
-            Center(
-              child: Image.asset('lib/assets/erasmus.jpg'),
+            SizedBox(height: 10,),
+            Text(
+                'Save the spot',
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                    fontSize: 20,
+                    color: Colors.brown[300]
+                ),
+              ),
+
+            Text(
+              'Make the memory',
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.brown[300]
+              ),
             ),
-            SizedBox(height: 100),
+            SizedBox(height: 60),
             Center(
-                child : Row(
+                child : Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
                       onPressed: (){
                         //go to login page
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => LoginPage())
+                        );
                       },
-                      child: Text('Log In')
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.brown,
+                        minimumSize: Size(300, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)
+                        )
+                      ),
+                      child: Text('Log In',
+                        style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white
+                        ),
+                      )
                   ),
-                  SizedBox(width: 100),
+                  SizedBox(height: 20,),
                   ElevatedButton(
                       onPressed: (){
                         //go to register page
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RegisterPage())
+                        );
                       },
-                      child: Text('Register')
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.brown[300],
+                        minimumSize: Size(300, 50),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                          )
+                      ),
+                      child: Text('Register',
+                        style: TextStyle(
+                            fontSize: 20,
+                            color: Colors.white
+                        ),)
                   ),])
 
 
             )
           ],
         ),
-      ),
-    );
+      );
   }
 }
+
+
+
 
 class LoginPage extends StatefulWidget{
   const LoginPage({super.key});
@@ -88,15 +132,12 @@ class LoginPage extends StatefulWidget{
 }
 
 class _LoginPageState extends State<LoginPage>{
+  bool _obscurePassword = true;
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.blueGrey[400],
-        title: Center(
-          child: Text('LOGIN PAGE'))
-      ),
+      backgroundColor: Colors.brown[50],
+
       body: Center(
         child: SizedBox(
           width: 300,
@@ -106,24 +147,52 @@ class _LoginPageState extends State<LoginPage>{
                   Text('Welcome Back!',
                   style:
                   TextStyle(
-                    fontSize: 28,
+                    fontSize: 40,
                     fontWeight: FontWeight.bold,
                   ),),
-                  SizedBox(height: 100),
+                  SizedBox(height: 80),
                   TextField(
                     decoration: InputDecoration(
                       labelText: 'Email',
                     ),
                   ),
                   TextField(
+                    obscureText: _obscurePassword,
                     decoration: InputDecoration(
                       labelText: 'Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword? Icons.visibility_off : Icons.visibility,
+                          color: Colors.brown[800],
+                        ),
+                          onPressed: (){
+                            setState(() {
+                            _obscurePassword = !_obscurePassword;
+                            }
+                            );
+                            },
+                          ),
                     ),
                   ),
+                  SizedBox(height: 80,),
                   ElevatedButton(
                       onPressed: () {
                         //go to normal page
-                      }, child: Text('LOGIN')),
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.brown,
+                        minimumSize: Size(200, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text('LOGIN',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                      ),
+                      )
+                  ),
                   TextButton(
                       onPressed: (){
                         //reset password
@@ -131,17 +200,26 @@ class _LoginPageState extends State<LoginPage>{
                       child: Text(
                         'Forgot password?',
                         style: TextStyle(
+                          color: Colors.brown[700],
                           decoration: TextDecoration.underline,
                         ),
                       )),
-                  SizedBox(height: 200),
-                  Text("You don't have an account?"),
+                  SizedBox(height: 150),
+                  Text("You don't have an account?",
+                  style: TextStyle(
+                    color: Colors.brown[800],
+                  ),),
                   TextButton(
                       onPressed: (){
                         //register page
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RegisterPage())
+                        );
                       }, 
                       child: Text('Sign up',
                       style: TextStyle(
+                        color: Colors.brown[500],
                         decoration: TextDecoration.underline,
                       ),)
                   )
@@ -164,22 +242,26 @@ class RegisterPage extends StatefulWidget{
 }
 
 class _RegisterPageState extends State<RegisterPage>{
+  bool _obscurePassword1 = true;
+  bool _obscurePassword2 = true;
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      appBar: AppBar(
-          backgroundColor: Colors.blueGrey[400],
-          title: Center(
-            child: Text('REGISTER PAGE')
-          )
-      ),
+      backgroundColor: Colors.brown[50],
       body: Center(
-        child: SizedBox(
+        child:
+        SizedBox(
           width: 300,
             child: Column(
               children: [
-                SizedBox(height: 100),
+                SizedBox(height: 100,),
+                Text('Get started!',
+                style: TextStyle(
+                  fontSize: 40,
+                  color: Colors.brown[800],
+                  fontWeight: FontWeight.bold,
+                ),),
+                SizedBox(height: 80),
                 TextField(
                   decoration: InputDecoration(
                     labelText: 'Name',
@@ -200,21 +282,68 @@ class _RegisterPageState extends State<RegisterPage>{
                 SizedBox(height: 10),
                 TextField(
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Phone number',
                   ),
                 ),
                 SizedBox(height: 10),
                 TextField(
+                  obscureText: _obscurePassword1,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword1? Icons.visibility_off : Icons.visibility,
+                        color: Colors.brown[800],
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          _obscurePassword1 = !_obscurePassword1;
+                        }
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 10),
+                TextField(
+                  obscureText: _obscurePassword2,
                   decoration: InputDecoration(
                     labelText: 'Confirm password',
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword2? Icons.visibility_off : Icons.visibility,
+                        color: Colors.brown[800],
+                      ),
+                      onPressed: (){
+                        setState(() {
+                          _obscurePassword2 = !_obscurePassword2;
+                        }
+                        );
+                      },
+                    ),
                   ),
                 ),
                 SizedBox(height: 100),
                 ElevatedButton(
                     onPressed: (){
                       // go to profile page
+                      /*Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => HomePage())
+                      );*/
                     },
-                    child: Text('Sign up'))
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.brown,
+                      minimumSize: Size(200, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)
+                      )
+                    ),
+                    child: Text('Sign up',
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.white
+                    ),))
               ],
             ),
         )
@@ -313,31 +442,77 @@ class InformationPage extends StatefulWidget{
 }
 
 class _InformationPageState extends State<InformationPage> {
+  int _selectedIndex = 0;
+  final List<Widget> _pages = [
+    StartPage(),
+    //FavoritesPage(),
+    //SearchPage(),
+    ProfilePage()
+  ];
+
+  void _onItemTapped(int index){
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.blueGrey[100],
-        appBar: AppBar(
-          backgroundColor: Colors.blueGrey[400],
-          title: Center(
-              child: Text('My information')),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              ElevatedButton(
-                  onPressed: () {
-                    //modify the info
-                  },
-                  child: Text('Modify',
-                    style: TextStyle(
-                      fontSize: 20,
-                    ),
-                  )
-              )
+        backgroundColor: Colors.grey[300],
+        appBar:
+        AppBar(
+          backgroundColor: Colors.grey[300],
+              title: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+              child:
+              Text('MY INFORMATION',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  )),
+              ),
+
+          actions: [
+            IconButton(
+                onPressed: (){
+                  //modification page
+                },
+                icon: Icon(Icons.edit))
+          ],
+            ),
+
+
+        bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Colors.white,
+            iconSize: 28,
+            selectedItemColor: Colors.grey,
+            unselectedItemColor: Colors.grey,
+            type: BottomNavigationBarType.fixed,
+            items: [
+              BottomNavigationBarItem(
+                icon: Icon(
+                    Icons.home),
+                label: 'Home' ),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                      Icons.favorite),
+              label: 'Favorites'),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                      Icons.search),
+                  label: 'Search'),
+              BottomNavigationBarItem(
+                  icon: Icon(
+                      Icons.person),
+                  label: 'Profile'),
             ],
-          ),
-        )
+        ),
+
+        //body:
+            //_selectedIndex == 1? StartPage() :
+            //_selectedIndex == 2? ProfilePage() :,
+            //SearchPage(),
+
     );
   }
 }
