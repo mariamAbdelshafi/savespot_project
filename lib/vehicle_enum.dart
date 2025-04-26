@@ -1,4 +1,4 @@
-enum Vehicle{
+enum EVehicle{
   taxi, 
   bus, 
   train, 

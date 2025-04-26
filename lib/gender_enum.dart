@@ -1,4 +1,4 @@
-enum Gender{
+enum EGender{
   
   male,
   female
