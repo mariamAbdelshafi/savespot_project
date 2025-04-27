@@ -262,64 +262,136 @@ class _RegisterPageState extends State<RegisterPage>{
                   fontWeight: FontWeight.bold,
                 ),),
                 SizedBox(height: 80),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Name',
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Surname',
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Username (Email)',
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  decoration: InputDecoration(
-                    labelText: 'Phone number',
-                  ),
-                ),
-                SizedBox(height: 10),
-                TextField(
-                  obscureText: _obscurePassword1,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword1? Icons.visibility_off : Icons.visibility,
-                        color: Colors.brown[800],
+                SizedBox(
+                  width: 350,
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.brown[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Name',
+                        contentPadding: EdgeInsets.only(left: 10),
+                        border: InputBorder.none,
                       ),
-                      onPressed: (){
-                        setState(() {
-                          _obscurePassword1 = !_obscurePassword1;
-                        }
-                        );
-                      },
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
-                TextField(
-                  obscureText: _obscurePassword2,
-                  decoration: InputDecoration(
-                    labelText: 'Confirm password',
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword2? Icons.visibility_off : Icons.visibility,
-                        color: Colors.brown[800],
+                SizedBox(height: 15,),
+                SizedBox(
+                  width: 350,
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.brown[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Surname',
+                        contentPadding: EdgeInsets.only(left: 10),
+                        border: InputBorder.none,
                       ),
-                      onPressed: (){
-                        setState(() {
-                          _obscurePassword2 = !_obscurePassword2;
-                        }
-                        );
-                      },
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15,),
+                SizedBox(
+                  width: 350,
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.brown[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Username',
+                        contentPadding: EdgeInsets.only(left: 10),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15,),
+                SizedBox(
+                  width: 350,
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.brown[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                    TextField(
+                      decoration: InputDecoration(
+                        labelText: 'Phone Number',
+                        contentPadding: EdgeInsets.only(left: 10),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15,),
+                SizedBox(
+                  width: 350,
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.brown[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                    TextField(
+                      obscureText: _obscurePassword1,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        contentPadding: EdgeInsets.only(left: 10),
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword1? Icons.visibility_off : Icons.visibility,
+                            color: Colors.brown[800],
+                          ),
+                          onPressed: (){
+                            setState(() {
+                              _obscurePassword1 = !_obscurePassword1;
+                            }
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 15,),
+                SizedBox(
+                  width: 350,
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                        color: Colors.brown[100],
+                        borderRadius: BorderRadius.circular(10)),
+                    child:
+                    TextField(
+                      obscureText: _obscurePassword2,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        contentPadding: EdgeInsets.only(left: 10),
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _obscurePassword2? Icons.visibility_off : Icons.visibility,
+                            color: Colors.brown[800],
+                          ),
+                          onPressed: (){
+                            setState(() {
+                              _obscurePassword2 = !_obscurePassword2;
+                            }
+                            );
+                          },
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -358,34 +430,43 @@ class ProfilePage extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      backgroundColor: Colors.blueGrey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.blueGrey[400],
-        title: Center(
-          child: Text('Profile page'),
-        ),
-      ),
+      backgroundColor: Colors.brown[50],
       body: Center(
         child: Column(
           children: [
             SizedBox(height: 100),
+            Text('My profile',
+            style: TextStyle(
+              fontSize: 40,
+              color: Colors.brown[800],
+              fontWeight: FontWeight.bold,
+            ),),
+            SizedBox(height: 60,),
             Center(
               child: Image.asset('lib/assets/profile_image.webp',
               width: 150,
               height: 150,),
             ),
-            SizedBox(height: 50),
+            SizedBox(height: 100),
             ElevatedButton(
                 onPressed: (){
                   //go to information page
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => InformationPage())
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueGrey[300],
+                  backgroundColor: Colors.brown,
                   minimumSize: Size(250, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                  )
                 ),
                 child: Text('My information',
                 style: TextStyle(
                   fontSize: 18,
+                  color: Colors.white,
                 ),),),
             SizedBox(height: 20),
             ElevatedButton(
@@ -393,12 +474,16 @@ class ProfilePage extends StatelessWidget{
                   //go to favorites page
                 },
                 style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey[300],
+                backgroundColor: Colors.brown[300],
                 minimumSize: Size(250, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                )
             ),
                 child: Text('Favorites',
                   style: TextStyle(
                     fontSize: 18,
+                    color: Colors.white
                   ),),),
             SizedBox(height: 20),
             ElevatedButton(
@@ -406,25 +491,37 @@ class ProfilePage extends StatelessWidget{
                   //go to comments page
                 },
                 style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey[300],
+                backgroundColor: Colors.brown,
                 minimumSize: Size(250, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                )
             ),
                 child: Text('My comments',
                   style: TextStyle(
                     fontSize: 18,
+                    color: Colors.white
                   ),),),
             SizedBox(height: 20),
             ElevatedButton(
                 onPressed: (){
-                  //log out back to home page
+                  //log out back to start page
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => StartPage())
+                  );
                 },
                 style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blueGrey[300],
+                backgroundColor: Colors.brown[300],
                 minimumSize: Size(250, 50),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10)
+                )
               ),
                 child: Text('Log out',
                   style: TextStyle(
                     fontSize: 18,
+                    color: Colors.white
                   ),),),
           ],
         ),
@@ -442,77 +539,200 @@ class InformationPage extends StatefulWidget{
 }
 
 class _InformationPageState extends State<InformationPage> {
-  int _selectedIndex = 0;
-  final List<Widget> _pages = [
-    StartPage(),
-    //FavoritesPage(),
-    //SearchPage(),
-    ProfilePage()
-  ];
-
-  void _onItemTapped(int index){
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
+  bool _obscurePassword = true;
+  bool isEditing = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.grey[300],
-        appBar:
-        AppBar(
-          backgroundColor: Colors.grey[300],
-              title: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-              child:
-              Text('MY INFORMATION',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  )),
+        backgroundColor: Colors.brown[50],
+        body :
+          Column(
+            children: [
+              SizedBox(height: 80,),
+              Row(
+                children: [
+                  SizedBox(width: 20,),
+                  Text('My information',
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 35,
+                        color: Colors.brown[800]
+                    ),),
+                  Spacer(),
+                  IconButton(
+              icon: Icon(isEditing? Icons.check : Icons.edit,
+              size: 30,
+              color: Colors.brown[800],),
+              onPressed: (){
+                setState(() {
+                  isEditing = !isEditing;
+                });
+              }),]),
+              SizedBox(height: 50,),
+              SizedBox(
+                width: 350,
+                child:
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.brown[100],
+                  borderRadius: BorderRadius.circular(10)),
+                  child:
+                  TextField(
+                    enabled: isEditing,
+                    decoration: InputDecoration(
+                        labelText: 'Name',
+                      contentPadding: EdgeInsets.only(left: 10),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
               ),
 
-          actions: [
-            IconButton(
-                onPressed: (){
-                  //modification page
-                },
-                icon: Icon(Icons.edit))
-          ],
-            ),
+              SizedBox(height: 15,),
+              SizedBox(
+                width: 350,
+                child:
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(10)),
+                  child:
+                  TextField(
+                    enabled: isEditing,
+                    decoration: InputDecoration(
+                      labelText: 'Surname',
+                      contentPadding: EdgeInsets.only(left: 10),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
 
+
+              SizedBox(height: 15,),
+              SizedBox(
+                width: 350,
+                child:
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(10)),
+                  child:
+                  TextField(
+                    enabled: isEditing,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      contentPadding: EdgeInsets.only(left: 10),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 15,),
+              SizedBox(
+                width: 350,
+                child:
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(10)),
+                  child:
+                  TextField(
+                    enabled: isEditing,
+                    decoration: InputDecoration(
+                      labelText: 'Number',
+                      contentPadding: EdgeInsets.only(left: 10),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 15,),
+              SizedBox(
+                width: 350,
+                child:
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(10)),
+                  child:
+                  TextField(
+                    enabled: isEditing,
+                    decoration: InputDecoration(
+                      labelText: 'Birthdate',
+                      contentPadding: EdgeInsets.only(left: 10),
+                      border: InputBorder.none,
+                    ),
+                  ),
+                ),
+              ),
+
+              SizedBox(height: 15,),
+              SizedBox(
+                width: 350,
+                child:
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(10)),
+                  child:
+                  TextField(
+                    obscureText: _obscurePassword,
+                    enabled: isEditing,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      contentPadding: EdgeInsets.only(left: 10),
+                      border: InputBorder.none,
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword? Icons.visibility_off : Icons.visibility,
+                          color: Colors.brown[800],
+                        ),
+                        onPressed: (){
+                          setState(() {
+                            _obscurePassword = !_obscurePassword;
+                          }
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            ],
+          ),
 
         bottomNavigationBar: BottomNavigationBar(
             backgroundColor: Colors.white,
             iconSize: 28,
-            selectedItemColor: Colors.grey,
-            unselectedItemColor: Colors.grey,
+            selectedItemColor: Colors.brown[800],
+            unselectedItemColor: Colors.brown[800],
             type: BottomNavigationBarType.fixed,
             items: [
               BottomNavigationBarItem(
                 icon: Icon(
-                    Icons.home),
-                label: 'Home' ),
+                    Icons.home,
+                color: Colors.brown[800],),
+                label: 'Home' ,),
               BottomNavigationBarItem(
                   icon: Icon(
-                      Icons.favorite),
+                      Icons.favorite,
+                      color: Colors.brown[800]),
               label: 'Favorites'),
               BottomNavigationBarItem(
                   icon: Icon(
-                      Icons.search),
-                  label: 'Search'),
+                      Icons.search,
+                      color: Colors.brown[800]),
+                  label: 'Search',),
               BottomNavigationBarItem(
                   icon: Icon(
-                      Icons.person),
+                      Icons.person,
+                      color: Colors.brown[800],),
                   label: 'Profile'),
             ],
         ),
-
-        //body:
-            //_selectedIndex == 1? StartPage() :
-            //_selectedIndex == 2? ProfilePage() :,
-            //SearchPage(),
-
     );
   }
 }
