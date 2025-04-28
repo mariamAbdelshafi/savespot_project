@@ -5,10 +5,6 @@ enum EVehicle{
   airplane, 
   subway
 
-
-// TODO(ebru) baska vehicle eklenebilir
-
-
 }
 
 
