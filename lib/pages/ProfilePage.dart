@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:savespot_project/pages/StartPage.dart';
 import 'package:savespot_project/pages/InformationPage.dart';
+import 'package:savespot_project/pages/BottomBar.dart';
 
 class ProfilePage extends StatelessWidget{
   const ProfilePage({super.key});
@@ -8,6 +9,7 @@ class ProfilePage extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Scaffold(
+      bottomNavigationBar: BottomBar(),
       backgroundColor: Colors.brown[50],
       body: Center(
         child: Column(
