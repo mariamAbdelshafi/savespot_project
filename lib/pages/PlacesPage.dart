@@ -34,31 +34,48 @@ class _PlacesPageState extends State<PlacesPage>{
                   borderRadius: BorderRadius.circular(30),
                 ),
                 child:
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child:
-                  FilledButton(
-                      onPressed: (){
-                        //put to favorites
-                        setState(() {
-                          favorites = !favorites;
-                        });
-                      },
-                      style: ElevatedButton.styleFrom(
-                        minimumSize: Size(30, 30),
-                        backgroundColor: Colors.transparent,
-                      ),
-                      child:
-                      Icon(
-                        favorites? Icons.favorite : Icons.favorite_border,
-                        color: favorites? Colors.white : Colors.white,
-                        size: 25,
+                    Column(
+                      children: [
+                        SizedBox(height: 150,),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child:
+                          IconButton(
+                            icon: Icon(Icons.arrow_forward_ios,
+                            color: Colors.brown[800],),
+                              onPressed: (){
+                                
+                              },
+                          )),
+                        SizedBox(height: 100,),
+                        Align(
+                          alignment: Alignment.bottomRight,
+                          child:
+                          FilledButton(
+                              onPressed: (){
+                                //put to favorites
+                                setState(() {
+                                  favorites = !favorites;
+                                });
+                              },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: Size(30, 30),
+                                backgroundColor: Colors.transparent,
+                              ),
+                              child:
+                              Icon(
+                                favorites? Icons.favorite : Icons.favorite_border,
+                                color: favorites? Colors.white : Colors.white,
+                                size: 25,
 
-                      )
-                ),
+                              )
+                          ),
 
 
-              )
+                        )
+                      ],
+                    )
+                
               ,
             )
             ),
@@ -169,30 +186,34 @@ class _PlacesPageState extends State<PlacesPage>{
             ),
 
             SizedBox(height: 40,),
-            Align(
-              alignment: Alignment.bottomRight,
-              child:
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.brown,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            Row(
+              children: [
+                Spacer(),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                ),
-                  onPressed: (){
-                    //go to comment page
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => MyCommentsPage())
-                    );
-                  },
-                  child:
-                  Text('See comments',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 15
-                  ),))
-            )
+                    onPressed: (){
+                      //go to comment page
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyCommentsPage())
+                      );
+                    },
+                    child:
+                    Text('See comments',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15
+                    ),)),
+    SizedBox(width: 20,)
+
+              ],
+            ),
+
 
 
           ],

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class SearchResearchpage extends StatefulWidget{
-  const SearchResearchpage({super.key});
+class SearchResultpage extends StatefulWidget{
+  const SearchResultpage({super.key});
 
   @override
-  State<SearchResearchpage> createState() => _SearchResearchpageState();
+  State<SearchResultpage> createState() => _SearchResultpageState();
 }
 
-class _SearchResearchpageState extends State<SearchResearchpage>{
+class _SearchResultpageState extends State<SearchResultpage>{
   String name = 'Place name';
   String numberComments = '22';
 
