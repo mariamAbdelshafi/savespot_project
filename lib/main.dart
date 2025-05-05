@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:savespot_project/pages/LandingPage.dart';
 import 'package:savespot_project/pages/PlacesPage.dart';
+import 'package:savespot_project/pages/SearchResearchPage.dart';
 import 'package:savespot_project/pages/StartPage.dart';
 import 'package:savespot_project/pages/HomePage.dart';
 import 'package:savespot_project/pages/LoginPage.dart';
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'SaveSpot',
-      home: PlacesPage(),
+      home: StartPage(),
     );
   }
 }

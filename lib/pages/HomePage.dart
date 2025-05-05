@@ -14,466 +14,476 @@ class _HomePageState extends State<HomePage>{
   bool favorites = false;
 
   Widget build(BuildContext context){
-    return Scaffold(
-      bottomNavigationBar: BottomBar(),
-      backgroundColor: Colors.brown[50],
-
-      body:
-      Column(
-        children: [
-          SizedBox(height: 100,),
-          Row(
-              children: [
-                SizedBox(width: 20,),
-                Text('Discover\nnew places!',
-                  style: TextStyle(
-                    color: Colors.brown[800],
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
-                  ),),
+    return Column(
+      children: [
+        SizedBox(height: 100,),
+        Row(
+            children: [
+              SizedBox(width: 20,),
+              Text('Discover\nnew places!',
+                style: TextStyle(
+                  color: Colors.brown[800],
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold,
+                ),),
 
 
-              ]),
+            ]),
 
-          SizedBox(height: 30,),
-          Row(
-              children: [
-                SizedBox(width: 35,),
-                SizedBox(
-                    width: 250,
+        SizedBox(height: 30,),
+        Row(
+            children: [
+              SizedBox(width: 35,),
+              SizedBox(
+                  width: 250,
 
+                  child:
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                     child:
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.brown[100],
-                        borderRadius: BorderRadius.circular(10),
+                    TextField(
+                      decoration: InputDecoration(
+                        prefixIcon: Icon(
+                          Icons.search,
+                          color: Colors.brown[800],
+                        ),
+                        labelText: 'Search',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  )
+              ),
+              SizedBox(
+                width: 15,
+              ),
+              Container(
+                  width: 55,
+                  height: 55,
+                  child:
+                  ElevatedButton(
+                      onPressed: (){
+                        //open filters
+                      },
+                      style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.zero,
+                          backgroundColor: Colors.brown[800],
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)
+                          )
                       ),
                       child:
-                      TextField(
-                        decoration: InputDecoration(
-                          prefixIcon: Icon(
-                            Icons.search,
-                            color: Colors.brown[800],
-                          ),
-                          labelText: 'Search',
-                          border: InputBorder.none,
-                        ),
-                      ),
-                    )
-                ),
-                SizedBox(
-                  width: 15,
-                ),
-                Container(
-                    width: 55,
-                    height: 55,
-                    child:
-                    ElevatedButton(
-                        onPressed: (){
-                          //open filters
-                        },
-                        style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.zero,
-                            backgroundColor: Colors.brown[800],
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)
-                            )
-                        ),
-                        child:
-                        Center(
-                            child:
-                            Icon(
-                              Icons.tune,
-                              color: Colors.white,
-                              size: 25,
-                            )
-                        )
+                      Center(
+                          child:
+                          Icon(
+                            Icons.tune,
+                            color: Colors.white,
+                            size: 25,
+                          )
+                      )
 
-                    )
-                ),
+                  )
+              ),
 
 
 
-              ]
+            ]
 
+        ),
+        SizedBox(height: 20,),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child:
+          Row(
+            children: [
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to restaurant category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Restaurants',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to accomodation category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Accomodation',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to transportation category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Transportation',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to events category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Events',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to shopping category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Shopping',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to fitness category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Fitness',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+
+              SizedBox(width: 10,),
+              ElevatedButton(
+                  onPressed: (){
+                    //go to studies category
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child:
+                  Text('Studies',
+                    style: TextStyle(
+                      color: Colors.brown[800],
+                    ),)),
+              SizedBox(width: 10,),
+            ],
           ),
-          SizedBox(height: 20,),
+        ),
+        SizedBox(height: 30),
+        SizedBox(
+          height: 200,
+          child:
           SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child:
             Row(
               children: [
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to restaurant category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child:
-                    Text('Restaurants',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
+                SizedBox(width: 20,),
+                Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.brown[100],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
 
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to accomodation category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  child:
+                  Align(
+                    alignment: Alignment.bottomRight,
                     child:
-                    Text('Accomodation',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
+                    FilledButton(
+                        onPressed: (){
+                          //put to favorites
+                          setState(() {
+                            favorites = !favorites;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(30, 30),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        child:
+                        Icon(
+                          favorites? Icons.favorite : Icons.favorite_border,
+                          color: favorites? Colors.white : Colors.white,
+                          size: 25,
 
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to transportation category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child:
-                    Text('Transportation',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
+                        )
 
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to events category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child:
-                    Text('Events',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
 
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to shopping category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child:
-                    Text('Shopping',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
+                ),
+                  ),
+                ),
 
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to fitness category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child:
-                    Text('Fitness',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
+                SizedBox(width: 20,),
+                Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.brown[100],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  child:
+                      Align(
+                        alignment: Alignment.bottomRight,
+                        child:
+                        FilledButton(
+                            onPressed: (){
+                              //put to favorites
+                              setState(() {
+                                favorites = !favorites;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                              minimumSize: Size(30, 30),
+                              backgroundColor: Colors.transparent,
+                            ),
+                            child:
+                            Icon(
+                              favorites? Icons.favorite : Icons.favorite_border,
+                              color: favorites? Colors.white : Colors.white,
+                              size: 25,
 
-                SizedBox(width: 10,),
-                ElevatedButton(
-                    onPressed: (){
-                      //go to studies category
-                    },
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                            )),
+
                       ),
-                    ),
+
+                ),
+
+                SizedBox(width: 20,),
+                Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.brown[100],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+
+                  child:
+                  Align(
+                    alignment: Alignment.bottomRight,
                     child:
-                    Text('Studies',
-                      style: TextStyle(
-                        color: Colors.brown[800],
-                      ),)),
-                SizedBox(width: 10,),
+                    FilledButton(
+                        onPressed: (){
+                          //put to favorites
+                          setState(() {
+                            favorites = !favorites;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(30, 30),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        child:
+                        Icon(
+                          favorites? Icons.favorite : Icons.favorite_border,
+                          color: favorites? Colors.white : Colors.white,
+                          size: 25,
+
+                        )
+
+
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 20,),
+                Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.brown[100],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+
+                  child:
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child:
+                    FilledButton(
+                        onPressed: (){
+                          //put to favorites
+                          setState(() {
+                            favorites = !favorites;
+                          });
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(30, 30),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        child:
+                        Icon(
+                          favorites? Icons.favorite : Icons.favorite_border,
+                          color: favorites? Colors.white : Colors.white,
+                          size: 25,
+
+                        )
+
+
+                    ),
+                  ),
+                ),
+
+                SizedBox(width: 20,),
+                Container(
+                  width: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.brown[100],
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+
+                  child:
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child:
+                    FilledButton(
+                        onPressed: (){
+                          //put to favorites
+                          setState(() {
+                            favorites = !favorites;
+                          });
+
+                        },
+                        style: ElevatedButton.styleFrom(
+                          minimumSize: Size(30, 30),
+                          backgroundColor: Colors.transparent,
+                        ),
+                        child:
+                        Icon(
+                          favorites? Icons.favorite : Icons.favorite_border,
+                          color: favorites? Colors.white : Colors.white,
+                          size: 25,
+
+                        )
+
+
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20,),
+
               ],
             ),
           ),
-          SizedBox(height: 30),
-          SizedBox(
-            height: 200,
-            child:
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child:
+        ),
+        //SizedBox(height: 80,),
+        SizedBox(height: 30,),
+        Row(
+          children: [
+            SizedBox(width: 20,),
+            Text('Last seen',
+              style: TextStyle(
+                  color: Colors.brown,
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold
+              ),
+            ),
+          ]
+
+        ),
+
+        SizedBox(height: 10,),
+        SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+          child:
               Row(
                 children: [
                   SizedBox(width: 20,),
                   Container(
                     width: 200,
+                    height: 80,
                     decoration: BoxDecoration(
                       color: Colors.brown[100],
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-
-                    child:
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child:
-                      FilledButton(
-                          onPressed: (){
-                            //put to favorites
-                            setState(() {
-                              favorites = !favorites;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(30, 30),
-                            backgroundColor: Colors.transparent,
-                          ),
-                          child:
-                          Icon(
-                            favorites? Icons.favorite : Icons.favorite_border,
-                            color: favorites? Colors.white : Colors.white,
-                            size: 25,
-
-                          )
-
-
-                  ),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-
                   SizedBox(width: 20,),
+
                   Container(
                     width: 200,
+                    height: 80,
                     decoration: BoxDecoration(
                       color: Colors.brown[100],
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    child:
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child:
-                          FilledButton(
-                              onPressed: (){
-                                //put to favorites
-                                setState(() {
-                                  favorites = !favorites;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(30, 30),
-                                backgroundColor: Colors.transparent,
-                              ),
-                              child:
-                              Icon(
-                                favorites? Icons.favorite : Icons.favorite_border,
-                                color: favorites? Colors.white : Colors.white,
-                                size: 25,
-
-                              )),
-
-                        ),
-
                   ),
-
                   SizedBox(width: 20,),
+
                   Container(
                     width: 200,
+                    height: 80,
                     decoration: BoxDecoration(
                       color: Colors.brown[100],
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-
-                    child:
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child:
-                      FilledButton(
-                          onPressed: (){
-                            //put to favorites
-                            setState(() {
-                              favorites = !favorites;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(30, 30),
-                            backgroundColor: Colors.transparent,
-                          ),
-                          child:
-                          Icon(
-                            favorites? Icons.favorite : Icons.favorite_border,
-                            color: favorites? Colors.white : Colors.white,
-                            size: 25,
-
-                          )
-
-
-                      ),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-
                   SizedBox(width: 20,),
+
                   Container(
                     width: 200,
+                    height: 80,
                     decoration: BoxDecoration(
                       color: Colors.brown[100],
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-
-                    child:
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child:
-                      FilledButton(
-                          onPressed: (){
-                            //put to favorites
-                            setState(() {
-                              favorites = !favorites;
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(30, 30),
-                            backgroundColor: Colors.transparent,
-                          ),
-                          child:
-                          Icon(
-                            favorites? Icons.favorite : Icons.favorite_border,
-                            color: favorites? Colors.white : Colors.white,
-                            size: 25,
-
-                          )
-
-
-                      ),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
-
                   SizedBox(width: 20,),
+
                   Container(
                     width: 200,
+                    height: 80,
                     decoration: BoxDecoration(
                       color: Colors.brown[100],
-                      borderRadius: BorderRadius.circular(30),
-                    ),
-
-                    child:
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child:
-                      FilledButton(
-                          onPressed: (){
-                            //put to favorites
-                            setState(() {
-                              favorites = !favorites;
-                            });
-
-                          },
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: Size(30, 30),
-                            backgroundColor: Colors.transparent,
-                          ),
-                          child:
-                          Icon(
-                            favorites? Icons.favorite : Icons.favorite_border,
-                            color: favorites? Colors.white : Colors.white,
-                            size: 25,
-
-                          )
-
-
-                      ),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                   ),
                   SizedBox(width: 20,),
-
                 ],
-              ),
-            ),
-          ),
-          SizedBox(height: 80,),
-          SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-            child:
-                Row(
-                  children: [
-                    SizedBox(width: 20,),
-                    Container(
-                      width: 200,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-
-                    Container(
-                      width: 200,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-
-                    Container(
-                      width: 200,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-
-                    Container(
-                      width: 200,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-
-                    Container(
-                      width: 200,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: Colors.brown[100],
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                    ),
-                    SizedBox(width: 20,),
-                  ],
-                )
+              )
 
 
-          ),
-    ]
-      ),
+        ),
+        ]
     );
   }
 }

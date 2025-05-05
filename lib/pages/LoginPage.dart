@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:savespot_project/pages/HomePage.dart';
+import 'package:savespot_project/pages/LandingPage.dart';
 import 'package:savespot_project/pages/RegisterPage.dart';
 
 class LoginPage extends StatefulWidget{
@@ -90,7 +90,7 @@ class _LoginPageState extends State<LoginPage>{
                               if(_formKey.currentState!.validate()){
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => HomePage())
+                                    MaterialPageRoute(builder: (context) => Landingpage())
                                 );
                               }
                             },
