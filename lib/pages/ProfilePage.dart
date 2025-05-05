@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:savespot_project/pages/FavoritesPage.dart';
+import 'package:savespot_project/pages/MyCommentsPage.dart';
 import 'package:savespot_project/pages/StartPage.dart';
 import 'package:savespot_project/pages/InformationPage.dart';
 import 'package:savespot_project/pages/BottomBar.dart';
@@ -52,6 +54,10 @@ class ProfilePage extends StatelessWidget{
             ElevatedButton(
               onPressed: (){
                 //go to favorites page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FavoritesPage())
+                );
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown[300],
@@ -68,7 +74,12 @@ class ProfilePage extends StatelessWidget{
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: (){
-                //go to comments page
+                //go to comment page
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MyCommentsPage())
+                );
+
               },
               style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.brown,
