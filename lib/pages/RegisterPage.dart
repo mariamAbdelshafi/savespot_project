@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:savespot_project/pages/LandingPage.dart';
-import 'package:savespot_project/pages/LandingPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class RegisterPage extends StatefulWidget{
   const RegisterPage({super.key});
@@ -243,13 +245,46 @@ class _RegisterPageState extends State<RegisterPage>{
                     ),
                     SizedBox(height: 60  ),
                     ElevatedButton(
-                        onPressed: (){
+                        onPressed: () async {
                           // go to home page
-                          if(_formKey.currentState!.validate()) {
-                            Navigator.push(
+                          if (_formKey.currentState!.validate()) {
+                            try {
+                              final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                                email: _emailController.text.trim(),
+                                password: _passwordController.text.trim(),
+                              );
+                              await FirebaseFirestore.instance
+                                  .collection('users')
+                                  .doc(credential.user!.uid)
+                                  .set({
+                                'name': _nameController.text.trim(),
+                                'surname': _surnameController.text.trim(),
+                                'phoneNumber': _phonenumberController.text.trim(),
+                                'email': _emailController.text.trim(),
+                                'createdAt': Timestamp.now(),
+                              });
+
+                              // Redirection si tout se passe bien
+                              Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(builder: (context) => Landingpage())
-                            );
+                                MaterialPageRoute(
+                                    builder: (context) => Landingpage()),
+                              );
+                            } on FirebaseAuthException catch (e) {
+                              String message = 'Registration failed';
+                              if (e.code == 'email-already-in-use') {
+                                message =
+                                'An account already exists for that email.';
+                              } else if (e.code == 'weak-password') {
+                                message = 'The password provided is too weak.';
+                              }
+                              else {
+                                message = e.message ?? 'Unknown error occurred.';
+                              }
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(message)),
+                              );
+                            }
                           }
                         },
                         style: ElevatedButton.styleFrom(

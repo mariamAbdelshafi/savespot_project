@@ -10,6 +10,8 @@ class SearchResultpage extends StatefulWidget{
 class _SearchResultpageState extends State<SearchResultpage>{
   String name = 'Place name';
   String numberComments = '22';
+  String numberRatings = '12';
+  double avgRating = 3.9;
 
   Widget build(BuildContext context){
     return Scaffold(
@@ -17,17 +19,15 @@ class _SearchResultpageState extends State<SearchResultpage>{
       body:
       Center(
         child:
-        Column(
-          children: [
-            SizedBox(
-              height: 70,
-            ),
               SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child:
                 Column(
                   children: [
-                    for(int i=0; i<6; i++) ...[
+                    SizedBox(
+                      height: 70,
+                    ),
+                    for(int i=0; i<8; i++) ...[
                       Row(
                         children: [
                           SizedBox(width: 20,),
@@ -55,8 +55,6 @@ class _SearchResultpageState extends State<SearchResultpage>{
                 )
 
               ),
-          ],
-        ),
       ),
     );
   }

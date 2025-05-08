@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "768720920142",
+    "project_id": "savespot-7e6c9",
+    "storage_bucket": "savespot-7e6c9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768720920142:android:d849f07e59f495bd4c2d1f",
+        "android_client_info": {
+          "package_name": "com.example.savespot_project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "768720920142-8negc0gf171qt700lhqg743c5sopj708.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7oHF0qv-Xee2fKUj-5ZDNh3iSwITNPXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "768720920142-8negc0gf171qt700lhqg743c5sopj708.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
