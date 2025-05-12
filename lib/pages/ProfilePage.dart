@@ -11,7 +11,6 @@ class ProfilePage extends StatelessWidget{
   @override
   Widget build(BuildContext context){
     return Scaffold(
-      //bottomNavigationBar: BottomBar(),
       backgroundColor: Colors.brown[50],
       body: Center(
         child: Column(

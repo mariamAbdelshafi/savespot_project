@@ -1,144 +1,179 @@
 import 'package:flutter/material.dart';
 import 'package:savespot_project/pages/MyCommentsPage.dart';
 
-class PlacesPage extends StatefulWidget{
-  const PlacesPage({super.key});
+class PlacesPage extends StatefulWidget {
+  final String placeId;
+  final String name;
+  final String address;
+  final String description;
+  final String phoneNumber;
+  final String emailAddress;
+  final double avgRating;
+  final List<String> images;
+  final bool favorite;
+
+  const PlacesPage({
+    super.key,
+    required this.placeId,
+    required this.name,
+    required this.address,
+    required this.description,
+    required this.phoneNumber,
+    required this.emailAddress,
+    required this.avgRating,
+    required this.images,
+    required this.favorite,
+  });
 
   @override
   State<PlacesPage> createState() => _PlacesPageState();
 }
 
-class _PlacesPageState extends State<PlacesPage>{
-  bool favorites = false;
-  double avgRating = 3.9;
-  String address = 'address';
-  String description = 'gfhgsfshfldsjdlgjlskghkjgkjghldjggjlsdhgkjdgflkjgmsjghlglsjgmsfhsfjsdgojo';
-  String phoneNumber = '123456789';
-  String emailAddress = 'email@gmail.com';
+class _PlacesPageState extends State<PlacesPage> {
+  int currentImageIndex = 0;
+  bool isFavorite = false;
 
-  Widget build(BuildContext context){
+  void nextImage() {
+    setState(() {
+      currentImageIndex = (currentImageIndex + 1) % widget.images.length;
+    });
+  }
+
+  void previousImage() {
+    setState(() {
+      currentImageIndex = (currentImageIndex - 1 + widget.images.length) % widget.images.length;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.brown[50],
       body: Center(
-        child:
-        Column(
+        child: Column(
           children: [
-            SizedBox(height: 50,),
+            SizedBox(height: 50),
             SizedBox(
               height: 350,
               width: 350,
-              child:
-              Container(
+              child: Container(
                 decoration: BoxDecoration(
                   color: Colors.brown[100],
                   borderRadius: BorderRadius.circular(30),
                 ),
-                child:
-                    Column(
-                      children: [
-                        SizedBox(height: 150,),
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child:
-                          IconButton(
-                            icon: Icon(Icons.arrow_forward_ios,
-                            color: Colors.brown[800],),
-                              onPressed: (){
-                                
-                              },
-                          )),
-                        SizedBox(height: 100,),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child:
-                          FilledButton(
-                              onPressed: (){
-                                //put to favorites
-                                setState(() {
-                                  favorites = !favorites;
-                                });
-                              },
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(30, 30),
-                                backgroundColor: Colors.transparent,
-                              ),
-                              child:
-                              Icon(
-                                favorites? Icons.favorite : Icons.favorite_border,
-                                color: favorites? Colors.white : Colors.white,
-                                size: 25,
-
-                              )
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Image.network(
+                        widget.images[currentImageIndex],
+                        fit: BoxFit.cover,
+                        width: 350,
+                        height: 350,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Image.asset('assets/placeholder_image.jpg', fit: BoxFit.cover);
+                        },
+                      ),
+                    ),
+                    Positioned(
+                      left: 10,
+                      top: 10,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_back_ios, color: Colors.white),
+                        onPressed: previousImage,
+                      ),
+                    ),
+                    Positioned(
+                      right: 10,
+                      top: 10,
+                      child: IconButton(
+                        icon: Icon(Icons.arrow_forward_ios, color: Colors.white),
+                        onPressed: nextImage,
+                      ),
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: EdgeInsets.all(10),
+                        child: FilledButton(
+                          onPressed: () {
+                            setState(() {
+                              isFavorite = !isFavorite;
+                            });
+                          },
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: Size(30, 30),
+                            backgroundColor: Colors.transparent,
                           ),
-
-
-                        )
-                      ],
-                    )
-                
-              ,
-            )
+                          child: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: Colors.white,
+                            size: 25,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Row(
               children: [
-                SizedBox(width: 30,),
-                Text('Place name',
+                SizedBox(width: 30),
+                Text(
+                  widget.name,
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Colors.brown[800]
+                    color: Colors.brown[800],
                   ),
                 ),
                 Spacer(),
                 SizedBox(
                   height: 20,
                   width: 50,
-                  child:
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.amber[50],
-                        borderRadius: BorderRadius.circular(30)
-                      ),
-                      child:
-                          Row(
-                            children: [
-                              Icon(
-                                Icons.star,
-                                color: Colors.amber,
-                                size: 20,
-                              ),
-                              SizedBox(width: 5,),
-                              Text('$avgRating'),
-                            ],
-                          ),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.amber[50],
+                      borderRadius: BorderRadius.circular(30),
                     ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.star,
+                          color: Colors.amber,
+                          size: 20,
+                        ),
+                        SizedBox(width: 5),
+                        Text('${widget.avgRating}'),
+                      ],
+                    ),
+                  ),
                 ),
-                SizedBox(width: 20,),
-
+                SizedBox(width: 20),
               ],
             ),
             Row(
               children: [
-                SizedBox(width: 35,),
+                SizedBox(width: 35),
                 Icon(
                   Icons.place,
                   size: 20,
                   color: Colors.brown,
                 ),
-                Text('$address'),
+                Text(widget.address),
               ],
             ),
-
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Row(
               children: [
-                SizedBox(width: 30,),
-                Text('Description',
+                SizedBox(width: 30),
+                Text(
+                  'Description',
                   style: TextStyle(
-                      color: Colors.brown[800],
-                      fontWeight: FontWeight.bold,
-                      fontSize: 25
+                    color: Colors.brown[800],
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
                   ),
                 ),
               ],
@@ -146,46 +181,45 @@ class _PlacesPageState extends State<PlacesPage>{
             SizedBox(
               width: 330,
               height: 70,
-              child:
-              Text('$description'),
+              child: Text(widget.description),
             ),
-
-            SizedBox(height: 20,),
+            SizedBox(height: 20),
             Row(
               children: [
-                SizedBox(width: 30,),
-                Text('Contact',
+                SizedBox(width: 30),
+                Text(
+                  'Contact',
                   style: TextStyle(
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold
-                  ),)
+                    fontSize: 25,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
-            SizedBox(height: 5,),
+            SizedBox(height: 5),
             Row(
               children: [
-                SizedBox(width: 30,),
+                SizedBox(width: 30),
                 Icon(
                   Icons.phone,
                   color: Colors.brown,
                 ),
-                SizedBox(width: 15,),
-                Text('$phoneNumber'),
+                SizedBox(width: 15),
+                Text(widget.phoneNumber),
               ],
             ),
             Row(
               children: [
-                SizedBox(width: 30,),
+                SizedBox(width: 30),
                 Icon(
                   Icons.email,
                   color: Colors.brown,
                 ),
-                SizedBox(width: 15,),
-                Text('$emailAddress'),
+                SizedBox(width: 15),
+                Text(widget.emailAddress),
               ],
             ),
-
-            SizedBox(height: 40,),
+            SizedBox(height: 40),
             Row(
               children: [
                 Spacer(),
@@ -196,26 +230,23 @@ class _PlacesPageState extends State<PlacesPage>{
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                    onPressed: (){
-                      //go to comment page
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MyCommentsPage())
-                      );
-                    },
-                    child:
-                    Text('See comments',
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => MyCommentsPage()),
+                    );
+                  },
+                  child: Text(
+                    'See comments',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 15
-                    ),)),
-    SizedBox(width: 20,)
-
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 20),
               ],
             ),
-
-
-
           ],
         ),
       ),

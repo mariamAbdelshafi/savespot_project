@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:savespot_project/pages/HomePage.dart';
 import 'package:savespot_project/pages/ProfilePage.dart';
 import 'package:savespot_project/pages/FavoritesPage.dart';
-import 'package:savespot_project/pages/SearchResultPage.dart';
+import 'package:savespot_project/pages/SearchPage.dart';
 
 class BottomBar extends StatefulWidget{
   const BottomBar({super.key, required this.onPageChanged});
@@ -18,7 +18,7 @@ class _BottomBarState extends State<BottomBar>{
   final List<Widget> _pages = <Widget>[
     HomePage(),
     FavoritesPage(),
-    SearchResultpage(),
+    SearchPage(),
     ProfilePage(),
 
   ];

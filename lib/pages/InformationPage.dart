@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:savespot_project/pages/HomePage.dart';
 import 'package:savespot_project/pages/ProfilePage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class InformationPage extends StatefulWidget{
   const InformationPage({super.key});
@@ -10,9 +12,14 @@ class InformationPage extends StatefulWidget{
 }
 
 class _InformationPageState extends State<InformationPage> {
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _userUid;
   bool isEditing = false;
   bool _obscurePassword1 = true;
   bool _obscurePassword2 = true;
+  bool _isLoading = true;
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
   final _phonenumberController = TextEditingController();
@@ -21,19 +28,112 @@ class _InformationPageState extends State<InformationPage> {
   final _passwordConfirmationController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  int _selectedIndex = 1;
-  final List<Widget> _pages = [
-    ProfilePage(),
-    //InformationPage(),
-    HomePage()
-  ];
-
-  void _onItemTapped(int index){
-    setState(() {
-      _selectedIndex = index;
-    });
+  @override
+  void initState() {
+    super.initState();
+    final user = _auth.currentUser;
+    if (user != null) {
+      setState(() {
+        _userUid = user.uid;
+      });
+    }
+    Future.delayed(Duration.zero, () => loadUserData());
   }
 
+  Future<void> loadUserData() async {
+    if (_userUid == null) {
+      setState(() {
+        _isLoading = false;
+      });
+      /*ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Aucun utilisateur connecté')),
+      );*/
+      return;
+    }
+
+    try {
+      final docSnapshot = await _firestore.collection('users').doc(_userUid).get();
+      if (docSnapshot.exists) {
+        final data = docSnapshot.data() as Map<String, dynamic>;
+        setState(() {
+          _nameController.text = data['name'] ?? '';
+          _surnameController.text = data['surname'] ?? '';
+          _emailController.text = data['email'] ?? '';
+          _phonenumberController.text = data['phoneNumber'] ?? '';
+          _passwordController.text = data['password'] ??'';
+          _passwordConfirmationController.text = data['password'] ??'';
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      /*ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur de chargement : $e')),
+      );*/
+    }
+  }
+
+  Future<void> saveUserData() async {
+    if (_userUid == null) {
+      /*ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Aucun utilisateur connecté')),
+      );*/
+      return;
+    }
+
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    try {
+      final updatedData = {
+        'name': _nameController.text,
+        'surname': _surnameController.text,
+        'email': _emailController.text,
+        'phoneNumber': _phonenumberController.text,
+        //'password' : _passwordController.text
+      };
+
+      await _firestore.collection('users').doc(_userUid).set(
+        updatedData,
+        SetOptions(merge: true),
+      );
+
+      /*if (_passwordController.text.isNotEmpty &&
+          _passwordController.text == _passwordConfirmationController.text) {
+        await _auth.currentUser?.updatePassword(_passwordController.text);
+      }*/
+
+      /*ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Informations mises à jour avec succès')),
+      );*/
+      setState(() {
+        isEditing = false;
+      });
+    } catch (e) {
+      //print('Erreur lors de la sauvegarde : $e');
+      /*ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Échec de la sauvegarde : $e')),
+      );*/
+    }
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _surnameController.dispose();
+    _phonenumberController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _passwordConfirmationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,8 +157,9 @@ class _InformationPageState extends State<InformationPage> {
                     icon: Icon(isEditing? Icons.check : Icons.edit,
                       size: 30,
                       color: Colors.brown[800],),
-                    onPressed: (){
-                      if(isEditing == true){
+                    onPressed: () async {
+                      if(isEditing){
+                        await saveUserData();
                         if(_formKey.currentState!.validate()) {
                           setState(() {
                             isEditing = false;
@@ -78,7 +179,7 @@ class _InformationPageState extends State<InformationPage> {
               width: 150,
               height: 150,),
           ),
-          SizedBox(height: 30,),
+          SizedBox(height: 50,),
           SizedBox(
             width: 350,
             child:
@@ -206,7 +307,7 @@ class _InformationPageState extends State<InformationPage> {
 
                             ),
 
-                            SizedBox(height: 15,),
+                            /*SizedBox(height: 15,),
                             SizedBox(
                                 width: 350,
                                 child:
@@ -296,7 +397,7 @@ class _InformationPageState extends State<InformationPage> {
                                     ),
                                   ),
 
-                            ),
+                            ),*/
 
                           ],
                         )
