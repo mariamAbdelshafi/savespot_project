@@ -14,31 +14,29 @@ class Landingpage extends StatefulWidget {
 
 class _LandingpageState extends State<Landingpage> {
   int pageIndex = 0;
-  final List<Widget> _pages = <Widget>[
-  HomePage(),
-  FavoritesPage(),
-  SearchPage(),
-  ProfilePage(),
 
-];
+  List<Widget> get pages => [
+    HomePage(onChangePage: (int index) {
+      setState(() {
+        pageIndex = index;
+      });
+    }),
+    FavoritesPage(),
+    SearchPage(),
+    ProfilePage(),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: BottomBar(
-            onPageChanged :
-                (
-                pageIndex
-
-                )
-            {
-              setState(() {
-                this.pageIndex= pageIndex;
-              });
-            }
-
-        ),
-      body:
-        _pages [pageIndex]
+      bottomNavigationBar: BottomBar(
+        onPageChanged: (index) {
+          setState(() {
+            pageIndex = index;
+          });
+        },
+      ),
+      body: pages[pageIndex],
     );
   }
 }

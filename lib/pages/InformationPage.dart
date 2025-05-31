@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:savespot_project/pages/HomePage.dart';
+import 'package:savespot_project/pages/LandingPage.dart';
 import 'package:savespot_project/pages/ProfilePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,14 +17,16 @@ class InformationPage extends StatefulWidget{
 }
 
 class _InformationPageState extends State<InformationPage> {
-
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final ImagePicker _picker = ImagePicker();
+
   String? _userUid;
   bool isEditing = false;
-  bool _obscurePassword1 = true;
-  bool _obscurePassword2 = true;
   bool _isLoading = true;
+  File? _profileImage;
+  String? _profileImageUrl;
+
   final _nameController = TextEditingController();
   final _surnameController = TextEditingController();
   final _phonenumberController = TextEditingController();
@@ -45,9 +52,6 @@ class _InformationPageState extends State<InformationPage> {
       setState(() {
         _isLoading = false;
       });
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Aucun utilisateur connecté')),
-      );*/
       return;
     }
 
@@ -60,8 +64,9 @@ class _InformationPageState extends State<InformationPage> {
           _surnameController.text = data['surname'] ?? '';
           _emailController.text = data['email'] ?? '';
           _phonenumberController.text = data['phoneNumber'] ?? '';
-          _passwordController.text = data['password'] ??'';
-          _passwordConfirmationController.text = data['password'] ??'';
+          _passwordController.text = data['password'] ?? '';
+          _passwordConfirmationController.text = data['password'] ?? '';
+          _profileImageUrl = data['profileImageUrl']; // Charger l'URL de l'image
           _isLoading = false;
         });
       } else {
@@ -73,31 +78,108 @@ class _InformationPageState extends State<InformationPage> {
       setState(() {
         _isLoading = false;
       });
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur de chargement : $e')),
-      );*/
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _profileImage = File(pickedFile.path);
+      });
+      await _uploadImage();
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_profileImage == null || _userUid == null) return;
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final storageRef = FirebaseStorage.instance
+          .ref()
+          .child('profile_images')
+          .child('$_userUid.jpg');
+
+      await storageRef.putFile(_profileImage!);
+      final imageUrl = await storageRef.getDownloadURL();
+
+      await _firestore.collection('users').doc(_userUid).update({
+        'profileImageUrl': imageUrl,
+      });
+
+      setState(() {
+        _profileImageUrl = imageUrl;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('error')),
+      );
+    }
+  }
+
+
+  Future<void> _resetToDefaultImage() async {
+    if (_userUid == null) return;
+
+    try {
+      setState(() {
+        _isLoading = true;
+        _profileImage = null;
+        _profileImageUrl = null;
+      });
+
+      // Supprimer l'image du stockage si elle existe
+      try {
+        final storageRef = FirebaseStorage.instance
+            .ref()
+            .child('profile_images')
+            .child('$_userUid.jpg');
+        await storageRef.delete();
+      } catch (e) {
+        // L'image n'existe peut-être pas, ce n'est pas grave
+      }
+
+      await _firestore.collection('users').doc(_userUid).update({
+        'profileImageUrl': FieldValue.delete(),
+      });
+
+      setState(() {
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la réinitialisation de l\'image')),
+      );
     }
   }
 
   Future<void> saveUserData() async {
-    if (_userUid == null) {
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Aucun utilisateur connecté')),
-      );*/
-      return;
-    }
-
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    if (_userUid == null) return;
+    if (!_formKey.currentState!.validate()) return;
 
     try {
+      setState(() {
+        _isLoading = true;
+      });
+
       final updatedData = {
         'name': _nameController.text,
         'surname': _surnameController.text,
         'email': _emailController.text,
         'phoneNumber': _phonenumberController.text,
-        //'password' : _passwordController.text
+        if (_profileImageUrl != null) 'profileImageUrl': _profileImageUrl,
       };
 
       await _firestore.collection('users').doc(_userUid).set(
@@ -105,22 +187,27 @@ class _InformationPageState extends State<InformationPage> {
         SetOptions(merge: true),
       );
 
-      /*if (_passwordController.text.isNotEmpty &&
-          _passwordController.text == _passwordConfirmationController.text) {
-        await _auth.currentUser?.updatePassword(_passwordController.text);
-      }*/
-
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Informations mises à jour avec succès')),
-      );*/
       setState(() {
         isEditing = false;
+        _isLoading = false;
       });
     } catch (e) {
-      //print('Erreur lors de la sauvegarde : $e');
-      /*ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Échec de la sauvegarde : $e')),
-      );*/
+      setState(() {
+        _isLoading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erreur lors de la sauvegarde')),
+      );
+    }
+  }
+
+  ImageProvider _getProfileImage() {
+    if (_profileImage != null) {
+      return FileImage(_profileImage!);
+    } else if (_profileImageUrl != null && _profileImageUrl!.isNotEmpty) {
+      return NetworkImage(_profileImageUrl!);
+    } else {
+      return AssetImage('lib/assets/profile_image.webp');
     }
   }
 
@@ -174,11 +261,47 @@ class _InformationPageState extends State<InformationPage> {
 
                     }),]),
           SizedBox(height: 40,),
-          Center(
-            child: Image.asset('lib/assets/profile_image.webp',
-              width: 150,
-              height: 150,),
+          GestureDetector(
+            onTap: isEditing ? _pickImage : null,
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 75,
+                  backgroundColor: Colors.brown[200],
+                  backgroundImage: _getProfileImage(),
+                  child: _profileImage == null &&
+                      (_profileImageUrl == null || _profileImageUrl!.isEmpty)
+                      ? Icon(Icons.person, size: 50, color: Colors.brown[800])
+                      : null,
+                ),
+                if (isEditing)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.brown,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.edit,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
           ),
+          if (isEditing && (_profileImage != null ||
+              (_profileImageUrl != null && _profileImageUrl!.isNotEmpty)))
+            TextButton(
+              onPressed: _resetToDefaultImage,
+              child: Text('go back to default image',
+                  style: TextStyle(color: Colors.brown)),
+            ),
+
           SizedBox(height: 50,),
           SizedBox(
             width: 350,
@@ -304,107 +427,10 @@ class _InformationPageState extends State<InformationPage> {
                                         }
                                     ),
                                   ),
-
                             ),
-
-                            /*SizedBox(height: 15,),
-                            SizedBox(
-                                width: 350,
-                                child:
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.brown[100],
-                                        borderRadius: BorderRadius.circular(10)),
-                                    child:
-                                    TextFormField(
-                                        controller: _passwordController,
-                                        obscureText: _obscurePassword1,
-                                        enabled: isEditing,
-                                        decoration: InputDecoration(
-                                          labelText: 'Password',
-                                          contentPadding: EdgeInsets.only(left: 10),
-                                          border: InputBorder.none,
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              _obscurePassword1? Icons.visibility_off : Icons.visibility,
-                                              color: Colors.brown[800],
-                                            ),
-                                            onPressed: (){
-                                              setState(() {
-                                                _obscurePassword1 = !_obscurePassword1;
-                                              }
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter a password';
-                                          }
-                                          final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$');
-                                          if(value.length < 6){
-                                            return 'Password must be at least 6 characters';
-                                          }
-                                          if(!passwordRegex.hasMatch(value)){
-                                            return 'Your password must contain:\nan uppercase, a lowercase and a number';
-                                          }
-                                          return null;
-                                        }
-                                    ),
-                                  ),
-
-                            ),
-
-                            SizedBox(height: 15,),
-                            SizedBox(
-                                width: 350,
-                                child:
-                                  Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.brown[100],
-                                        borderRadius: BorderRadius.circular(10)),
-                                    child:
-                                    TextFormField(
-                                        controller: _passwordConfirmationController,
-                                        obscureText: _obscurePassword2,
-                                        enabled: isEditing,
-                                        decoration: InputDecoration(
-                                          labelText: 'Confirm your password',
-                                          contentPadding: EdgeInsets.only(left: 10),
-                                          border: InputBorder.none,
-                                          suffixIcon: IconButton(
-                                            icon: Icon(
-                                              _obscurePassword2? Icons.visibility_off : Icons.visibility,
-                                              color: Colors.brown[800],
-                                            ),
-                                            onPressed: (){
-                                              setState(() {
-                                                _obscurePassword2 = !_obscurePassword2;
-                                              }
-                                              );
-                                            },
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please confirm your password';
-                                          }
-                                          if(value != _passwordController.text){
-                                            return 'Passwords do not match';
-                                          }
-                                          return null;
-                                        }
-                                    ),
-                                  ),
-
-                            ),*/
-
                           ],
                         )
-
-
                 ),
-
           ),
 
 
@@ -414,7 +440,7 @@ class _InformationPageState extends State<InformationPage> {
               onPressed: (){
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => ProfilePage())
+                    MaterialPageRoute(builder: (context) => Landingpage())
                 );
               },
               style: ElevatedButton.styleFrom(

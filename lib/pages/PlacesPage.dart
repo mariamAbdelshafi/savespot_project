@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:savespot_project/pages/MyCommentsPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:savespot_project/pages/CommentsPage.dart';
 
 class PlacesPage extends StatefulWidget {
   final String placeId;
@@ -11,6 +14,7 @@ class PlacesPage extends StatefulWidget {
   final double avgRating;
   final List<String> images;
   final bool favorite;
+  final VoidCallback? onFavoriteChanged;
 
   const PlacesPage({
     super.key,
@@ -23,6 +27,7 @@ class PlacesPage extends StatefulWidget {
     required this.avgRating,
     required this.images,
     required this.favorite,
+    this.onFavoriteChanged,
   });
 
   @override
@@ -32,6 +37,57 @@ class PlacesPage extends StatefulWidget {
 class _PlacesPageState extends State<PlacesPage> {
   int currentImageIndex = 0;
   bool isFavorite = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFavoriteStatus();
+  }
+
+  void _loadFavoriteStatus() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.placeId)
+        .get();
+
+    setState(() {
+      isFavorite = doc.exists;
+    });
+  }
+
+
+  void _toggleFavorite() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    final favRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .doc(widget.placeId);
+
+    setState(() {
+      isFavorite = !isFavorite;
+    });
+
+    if (isFavorite) {
+      await favRef.set({
+        'placeId': widget.placeId,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } else {
+      await favRef.delete();
+    }
+    widget.onFavoriteChanged?.call();
+  }
+
+
+
 
   void nextImage() {
     setState(() {
@@ -95,11 +151,7 @@ class _PlacesPageState extends State<PlacesPage> {
                       child: Padding(
                         padding: EdgeInsets.all(10),
                         child: FilledButton(
-                          onPressed: () {
-                            setState(() {
-                              isFavorite = !isFavorite;
-                            });
-                          },
+                          onPressed: _toggleFavorite,
                           style: ElevatedButton.styleFrom(
                             minimumSize: Size(30, 30),
                             backgroundColor: Colors.transparent,
@@ -222,6 +274,27 @@ class _PlacesPageState extends State<PlacesPage> {
             SizedBox(height: 40),
             Row(
               children: [
+                SizedBox(width: 20,),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.brown,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  onPressed: () {
+                    Navigator.pop(
+                      context,
+                    );
+                  },
+                  child: Text(
+                    'Go back',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
                 Spacer(),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -233,7 +306,7 @@ class _PlacesPageState extends State<PlacesPage> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => MyCommentsPage()),
+                      MaterialPageRoute(builder: (context) => CommentsPage(placeId: widget.placeId)),
                     );
                   },
                   child: Text(

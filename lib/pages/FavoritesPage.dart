@@ -1,9 +1,9 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:savespot_project/pages/PlacesPage.dart';
 
 class FavoritesPage extends StatefulWidget {
-  //const FavoritesPage({super.key});
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   @override
@@ -12,12 +12,35 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final user = FirebaseAuth.instance.currentUser;
 
-  Future<List<Map<String, dynamic>>> fetchPlaces() async {
-    QuerySnapshot snapshot = await _firestore.collection('Places').where('favorite', isEqualTo: true).get();
-    return snapshot.docs.map((doc) => {
-      ...doc.data() as Map<String, dynamic>,
-      'id': doc.id,
+  Future<List<Map<String, dynamic>>> fetchFavoritePlaces() async {
+    final user = FirebaseAuth.instance.currentUser;
+
+    if (user == null) {
+      return [];
+    }
+
+    final favSnapshot = await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('favorites')
+        .get();
+
+    final favoritePlaceIds = favSnapshot.docs.map((doc) => doc.id).toList();
+
+    if (favoritePlaceIds.isEmpty) return [];
+
+    final placesSnapshot = await _firestore
+        .collection('Places')
+        .where(FieldPath.documentId, whereIn: favoritePlaceIds)
+        .get();
+
+    return placesSnapshot.docs.map((doc) {
+      return {
+        ...doc.data() as Map<String, dynamic>,
+        'id': doc.id,
+      };
     }).toList();
   }
 
@@ -43,7 +66,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchPlaces(),
+              future: fetchFavoritePlaces(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();

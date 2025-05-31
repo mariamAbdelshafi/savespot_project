@@ -5,9 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:savespot_project/pages/PlacesPage.dart';
 import 'package:savespot_project/pages/SearchPage.dart';
 import 'package:savespot_project/pages/SearchResultPage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final Function(int)? onChangePage;
+  const HomePage({Key? key, this.onChangePage}) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -16,6 +18,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late Future<List<DocumentSnapshot>> placesFuture;
+  late Set<String> favoritePlaceIds = {};
+  final String? userId = FirebaseAuth.instance.currentUser?.uid;
+  bool isFavorite = false;
+  List<Map<String, dynamic>> lastSeenPlaces = [];
+
 
   Future<List<DocumentSnapshot>> fetchData({String? category}) async {
     QuerySnapshot snapshot = await _firestore.collection('Places').get();
@@ -26,20 +33,154 @@ class _HomePageState extends State<HomePage> {
     return snapshot.docs;
   }
 
+  Future<void> loadUserFavorites() async {
+    if (userId == null) return;
+    final favSnapshot = await _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .get();
+
+    setState(() {
+      favoritePlaceIds = favSnapshot.docs.map((doc) => doc.id).toSet();
+    });
+  }
+
+  Future<void> loadLastSeenPlaces() async {
+    try {
+      if (userId == null || !mounted) return;
+
+      final doc = await _firestore.collection('users').doc(userId!).get();
+      final data = doc.data() ?? {};
+
+      final rawList = data['lastSeen'] as List? ?? [];
+
+      setState(() {
+        lastSeenPlaces = rawList
+            .map((item) => Map<String, dynamic>.from(item))
+            .where((place) => place['name'] != null && place['name'] != 'Unknown')
+            .toList();
+      });
+
+    } catch (e) {
+      print('Error loading lastSeen: $e');
+    }
+  }
+
+  Future<void> _cleanInvalidEntries() async {
+    if (userId == null) return;
+
+    final userRef = _firestore.collection('users').doc(userId!);
+    final doc = await userRef.get();
+
+    if (doc.exists) {
+      final data = doc.data() ?? {};
+      final lastSeen = List.from(data['lastSeen'] ?? []);
+
+      final cleanedList = lastSeen.where((item) {
+        final map = Map<String, dynamic>.from(item);
+        return map['name'] != null && map['name'] != 'Unknown';
+      }).toList();
+
+      if (cleanedList.length != lastSeen.length) {
+        await userRef.update({'lastSeen': cleanedList});
+      }
+    }
+  }
+
+  Future<void> updateLastSeenPlace({
+    required String placeId,
+    required String name,
+    required List<String> images,
+    required String address,
+    required String description,
+    required String phoneNumber,
+    required String emailAddress,
+    required double avgRating,
+  }) async {
+    if (userId == null || !mounted) return;
+
+    try {
+      final userRef = _firestore.collection('users').doc(userId!);
+      final placeData = {
+        'id': placeId,
+        'name': name,
+        'images': images,
+        'address': address,
+        'description': description,
+        'phoneNumber': phoneNumber,
+        'emailAddress': emailAddress,
+        'avgRating': avgRating,
+        'clickedAt': DateTime.now().toIso8601String(),
+      };
+
+      await _firestore.runTransaction((transaction) async {
+        final doc = await transaction.get(userRef);
+        List<dynamic> current = List.from(doc.data()?['lastSeen'] ?? []);
+
+        current.removeWhere((item) => item['id'] == placeId);
+
+        current.insert(0, placeData);
+
+        if (current.length > 5) current = current.sublist(0, 5);
+
+        transaction.update(userRef, {'lastSeen': current});
+      });
+
+      if (mounted) {
+        await loadLastSeenPlaces();
+        setState(() {});
+      }
+
+    } catch (e) {
+      print('error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("refresh error")),
+        );
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     placesFuture = fetchData();
+    loadUserFavorites();
+    _cleanInvalidEntries();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      loadLastSeenPlaces();
+    });
   }
 
-  void toggleFavorite(String placeId, bool currentFavorite) async {
-    await _firestore.collection('Places').doc(placeId).update({
-      'favorite': !currentFavorite,
-    });
-    setState(() {
-      placesFuture = fetchData();
-    });
+  Future<bool> toggleFavorite(String placeId) async {
+    if (userId == null) return false;
+
+    final favRef = _firestore
+        .collection('users')
+        .doc(userId)
+        .collection('favorites')
+        .doc(placeId);
+
+    if (favoritePlaceIds.contains(placeId)) {
+      await favRef.delete();
+      setState(() {
+        favoritePlaceIds.remove(placeId);
+      });
+      return false;
+    } else {
+      await favRef.set({
+        'placeId': placeId,
+      });
+      setState(() {
+        favoritePlaceIds.add(placeId);
+      });
+      return true;
+    }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +209,9 @@ class _HomePageState extends State<HomePage> {
               height: 50,
               child: ElevatedButton(
                 onPressed:() {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => SearchPage()),
-                  );
+                  if (widget.onChangePage != null) {
+                    widget.onChangePage!(2);
+                  }
                 },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.brown[100],
@@ -201,7 +340,6 @@ class _HomePageState extends State<HomePage> {
               ElevatedButton(
                 onPressed: () {
                   // go to events category
-                  //updateCategory('Events');
                   Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -315,7 +453,7 @@ class _HomePageState extends State<HomePage> {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: places.asMap().entries.map((entry) {
+                  children: [ ...places.asMap().entries.map((entry) {
                     int index = entry.key;
                     var place = entry.value;
                     String name = place['name'] ?? 'Unknown';
@@ -324,7 +462,7 @@ class _HomePageState extends State<HomePage> {
                     String phoneNumber = place['phoneNumber'] ?? 'Unknown';
                     String emailAddress = place['email'] ?? 'Unknown';
                     double avgRating = (place['point'] as num?)?.toDouble() ?? 0.0;
-                    bool favorite = place['favorite'] ?? false;
+                    bool favorite = favoritePlaceIds.contains(place.id);
                     List<String> images = [];
                     if (place.data() != null &&
                         (place.data() as Map<String, dynamic>).containsKey('images') &&
@@ -341,7 +479,17 @@ class _HomePageState extends State<HomePage> {
                     return Padding(
                       padding: EdgeInsets.only(left: 20),
                       child: InkWell(
-                        onTap: () {
+                        onTap: () async{
+                            updateLastSeenPlace(
+                            placeId: place.id,
+                            name: name,
+                            images: images,
+                            address: address,
+                            description: description,
+                            phoneNumber: phoneNumber,
+                            emailAddress: emailAddress,
+                            avgRating: avgRating,
+                          );
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -355,9 +503,14 @@ class _HomePageState extends State<HomePage> {
                                 avgRating: avgRating,
                                 images: images,
                                 favorite: favorite,
+                                  onFavoriteChanged: () async {
+                                    await loadUserFavorites();
+                                    setState(() {});
+                                  }
                               ),
                             ),
                           );
+
                         },
                         borderRadius: BorderRadius.circular(30),
                         child: Container(
@@ -396,17 +549,20 @@ class _HomePageState extends State<HomePage> {
                                   padding: EdgeInsets.all(10),
                                   child: FilledButton(
                                     onPressed: () async {
-                                      toggleFavorite(
-                                        place.id,
-                                        place['favorite'] ?? false,
-                                      );
+                                      final placeId = place.id;
+                                      final updatedStatus = await toggleFavorite(placeId);
+                                      setState(() {
+                                        isFavorite = updatedStatus;
+                                      });
+
+                                      setState(() {});
                                     },
                                     style: ElevatedButton.styleFrom(
                                       minimumSize: Size(30, 30),
                                       backgroundColor: Colors.transparent,
                                     ),
                                     child: Icon(
-                                      (place['favorite'] ?? false)
+                                      favoritePlaceIds.contains(place.id)
                                           ? Icons.favorite
                                           : Icons.favorite_border,
                                       color: Colors.white,
@@ -421,6 +577,8 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   }).toList(),
+                    SizedBox(width: 20,)
+                ]
                 ),
               );
             },
@@ -444,56 +602,108 @@ class _HomePageState extends State<HomePage> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
-            children: [
-              SizedBox(width: 20),
-              Container(
-                width: 200,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.brown[100],
+            children: [ ...lastSeenPlaces.map((place) {
+              final placeId = place['id'] ?? '';
+              final name = place['name'] ?? 'Unknown';
+              final images = (place['images'] as List<dynamic>?)
+                  ?.map((e) => e.toString())
+                  .toList() ??
+                  [];
+              final address = place['address'] ?? '';
+              final description = place['description'] ?? '';
+              final phoneNumber = place['phoneNumber'] ?? '';
+              final emailAddress = place['emailAddress'] ?? '';
+              final avgRating = (place['avgRating'] as num?)?.toDouble() ?? 0.0;
+              final favorite = favoritePlaceIds.contains(placeId);
+
+              return Padding(
+                padding: EdgeInsets.only(left: 20),
+                child: InkWell(
+                  onTap: () async {
+                    await updateLastSeenPlace(
+                      placeId: placeId,
+                      name: name,
+                      images: images,
+                      address: address,
+                      description: description,
+                      phoneNumber: phoneNumber,
+                      emailAddress: emailAddress,
+                      avgRating: avgRating,
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PlacesPage(
+                          placeId: placeId,
+                          name: name,
+                          address: address,
+                          description: description,
+                          phoneNumber: phoneNumber,
+                          emailAddress: emailAddress,
+                          avgRating: avgRating,
+                          images: images,
+                          favorite: favorite,
+                          onFavoriteChanged: () async {
+                            await loadUserFavorites();
+                            setState(() {});
+                          },
+                        ),
+                      ),
+                    );
+                  },
                   borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    width: 200,
+                    height: 80,
+                    decoration: BoxDecoration(
+                      color: Colors.brown[100],
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 5),
+                            child: Container(
+                              width: 70,
+                              height: 70,
+                              decoration: BoxDecoration(
+                                color: Colors.brown[200],
+                                borderRadius: BorderRadius.circular(20),
+                                image: images.isNotEmpty
+                                    ? DecorationImage(
+                                  image: NetworkImage(images[0]),
+                                  fit: BoxFit.cover,
+                                )
+                                    : null,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            name,
+                            style: TextStyle(
+                              color: Colors.brown,
+                              fontSize: 18,
+                            ),
+                            softWrap: true,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              SizedBox(width: 20),
-              Container(
-                width: 200,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.brown[100],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              SizedBox(width: 20),
-              Container(
-                width: 200,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.brown[100],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              SizedBox(width: 20),
-              Container(
-                width: 200,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.brown[100],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              SizedBox(width: 20),
-              Container(
-                width: 200,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: Colors.brown[100],
-                  borderRadius: BorderRadius.circular(20),
-                ),
-              ),
-              SizedBox(width: 20),
-            ],
+              );
+            }).toList(),
+              SizedBox(width: 10,)
+            ]
           ),
-        ),
+        )
+        ,
       ],
     );
   }
