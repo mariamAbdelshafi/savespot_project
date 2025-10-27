@@ -29,6 +29,13 @@
             {
               "client_id": "768720920142-8negc0gf171qt700lhqg743c5sopj708.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "768720920142-cpqcf8gpmlstfbum24j4chcj3dbmm4aq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.savespotProject"
+              }
             }
           ]
         }

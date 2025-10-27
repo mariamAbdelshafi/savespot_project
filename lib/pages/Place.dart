@@ -32,7 +32,7 @@ class Place {
         address: data['address'] ?? '',
         description: data['description'] ?? '',
         phoneNumber: data['phoneNumber'] ?? '',
-        emailAddress: data['emailAddress'] ?? '',
+        emailAddress: data['email'] ?? '',
         avgRating: (data['point'] ?? 0).toDouble(),
         images: List<String>.from(data['images'] ?? []),
         favorite: data['favorite'] ?? false,

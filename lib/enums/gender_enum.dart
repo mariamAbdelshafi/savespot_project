@@ -1,6 +1,0 @@
-enum EGender{
-  
-  male,
-  female
-  
-  }

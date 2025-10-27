@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:savespot_project/pages/MyCommentsPage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:savespot_project/pages/CommentsPage.dart';
@@ -37,11 +36,42 @@ class PlacesPage extends StatefulWidget {
 class _PlacesPageState extends State<PlacesPage> {
   int currentImageIndex = 0;
   bool isFavorite = false;
+  double _currentAvgRating = 0.0;
+  bool _isLoadingRating = true;
+
+  Future<void> _loadAverageRating() async {
+    try {
+      setState(() => _isLoadingRating = true);
+
+      final commentsSnapshot = await FirebaseFirestore.instance
+          .collection('comments')
+          .where('placeId', isEqualTo: widget.placeId)
+          .get();
+
+      if (commentsSnapshot.docs.isEmpty) {
+        setState(() => _currentAvgRating = 0.0);
+        return;
+      }
+
+      double total = 0.0;
+      for (final doc in commentsSnapshot.docs) {
+        total += (doc.data()['rating'] as num).toDouble();
+      }
+
+      setState(() {
+        _currentAvgRating = total / commentsSnapshot.docs.length;
+        _isLoadingRating = false;
+      });
+    } catch (e) {
+      setState(() => _isLoadingRating = false);
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _loadFavoriteStatus();
+    _loadAverageRating();
   }
 
   void _loadFavoriteStatus() async {
@@ -105,10 +135,10 @@ class _PlacesPageState extends State<PlacesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.brown[50],
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
           children: [
-            SizedBox(height: 50),
+            SizedBox(height: 40),
             SizedBox(
               height: 350,
               width: 350,
@@ -197,7 +227,12 @@ class _PlacesPageState extends State<PlacesPage> {
                           size: 20,
                         ),
                         SizedBox(width: 5),
-                        Text('${widget.avgRating}'),
+                        _isLoadingRating
+                            ? Text("─", style: TextStyle(color: Colors.brown),)
+                            : Text(
+                          _currentAvgRating.toStringAsFixed(1),
+                          style: TextStyle(color: Colors.brown),
+                        ),
                       ],
                     ),
                   ),
@@ -235,7 +270,7 @@ class _PlacesPageState extends State<PlacesPage> {
               height: 70,
               child: Text(widget.description),
             ),
-            SizedBox(height: 20),
+            //SizedBox(height: 10),
             Row(
               children: [
                 SizedBox(width: 30),
@@ -271,7 +306,7 @@ class _PlacesPageState extends State<PlacesPage> {
                 Text(widget.emailAddress),
               ],
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 20),
             Row(
               children: [
                 SizedBox(width: 20,),
@@ -303,11 +338,17 @@ class _PlacesPageState extends State<PlacesPage> {
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    final shouldRefresh = await Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CommentsPage(placeId: widget.placeId)),
+                      MaterialPageRoute(
+                        builder: (context) => CommentsPage(placeId: widget.placeId),
+                      ),
                     );
+
+                    if (shouldRefresh == true) {
+                      _loadAverageRating();
+                    }
                   },
                   child: Text(
                     'See comments',

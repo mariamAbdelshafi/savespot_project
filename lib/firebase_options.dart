@@ -17,17 +17,29 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for ios - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
-        return windows;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for windows - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -40,51 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBcZNSfj554sWIJPtvcMvMkV01WfOl1yW0',
-    appId: '1:768720920142:web:069d927aba2ecf464c2d1f',
-    messagingSenderId: '768720920142',
-    projectId: 'savespot-7e6c9',
-    authDomain: 'savespot-7e6c9.firebaseapp.com',
-    storageBucket: 'savespot-7e6c9.firebasestorage.app',
-    measurementId: 'G-5799B0ZZ4J',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyA7oHF0qv-Xee2fKUj-5ZDNh3iSwITNPXE',
     appId: '1:768720920142:android:d849f07e59f495bd4c2d1f',
     messagingSenderId: '768720920142',
     projectId: 'savespot-7e6c9',
     storageBucket: 'savespot-7e6c9.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDn-q2S9PP0yYBp4nfuvwkTYyhtPH89KAc',
-    appId: '1:768720920142:ios:d4dc706b2528e00e4c2d1f',
-    messagingSenderId: '768720920142',
-    projectId: 'savespot-7e6c9',
-    storageBucket: 'savespot-7e6c9.firebasestorage.app',
-    iosClientId: '768720920142-cpqcf8gpmlstfbum24j4chcj3dbmm4aq.apps.googleusercontent.com',
-    iosBundleId: 'com.example.savespotProject',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyDn-q2S9PP0yYBp4nfuvwkTYyhtPH89KAc',
-    appId: '1:768720920142:ios:d4dc706b2528e00e4c2d1f',
-    messagingSenderId: '768720920142',
-    projectId: 'savespot-7e6c9',
-    storageBucket: 'savespot-7e6c9.firebasestorage.app',
-    iosClientId: '768720920142-cpqcf8gpmlstfbum24j4chcj3dbmm4aq.apps.googleusercontent.com',
-    iosBundleId: 'com.example.savespotProject',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBcZNSfj554sWIJPtvcMvMkV01WfOl1yW0',
-    appId: '1:768720920142:web:9c8688192a8d839f4c2d1f',
-    messagingSenderId: '768720920142',
-    projectId: 'savespot-7e6c9',
-    authDomain: 'savespot-7e6c9.firebaseapp.com',
-    storageBucket: 'savespot-7e6c9.firebasestorage.app',
-    measurementId: 'G-2B1X5FWE6Q',
   );
 }

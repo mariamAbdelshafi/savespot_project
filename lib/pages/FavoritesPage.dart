@@ -4,8 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:savespot_project/pages/PlacesPage.dart';
 
 class FavoritesPage extends StatefulWidget {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final Function(int)? onChangePage;
+  const FavoritesPage({Key? key, this.onChangePage}) : super(key: key);
   @override
   State<FavoritesPage> createState() => _FavoritesPageState();
 }
@@ -16,39 +16,55 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
   Future<List<Map<String, dynamic>>> fetchFavoritePlaces() async {
     final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return [];
-    }
+    if (user == null) return [];
 
     final favSnapshot = await _firestore
         .collection('users')
         .doc(user.uid)
         .collection('favorites')
         .get();
-
     final favoritePlaceIds = favSnapshot.docs.map((doc) => doc.id).toList();
-
     if (favoritePlaceIds.isEmpty) return [];
 
-    final placesSnapshot = await _firestore
-        .collection('Places')
-        .where(FieldPath.documentId, whereIn: favoritePlaceIds)
-        .get();
+    List<Map<String, dynamic>> placesWithRatings = [];
 
-    return placesSnapshot.docs.map((doc) {
-      return {
-        ...doc.data() as Map<String, dynamic>,
-        'id': doc.id,
-      };
-    }).toList();
+    for (String placeId in favoritePlaceIds) {
+      final placeDoc = await _firestore.collection('Places').doc(placeId).get();
+      if (!placeDoc.exists) continue;
+
+      final commentsSnapshot = await _firestore
+          .collection('comments')
+          .where('placeId', isEqualTo: placeId)
+          .get();
+
+      double avgRating = 0.0;
+      if (commentsSnapshot.docs.isNotEmpty) {
+        final total = commentsSnapshot.docs.fold(
+            0.0, (sum, doc) => sum + (doc.data()['rating'] as num).toDouble());
+        avgRating = total / commentsSnapshot.docs.length;
+      }
+
+      placesWithRatings.add({
+        ...placeDoc.data() as Map<String, dynamic>,
+        'id': placeId,
+        'point': avgRating,
+        'numberComments': commentsSnapshot.docs.length,
+      });
+    }
+
+    return placesWithRatings;
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.brown[50],
-      body: Column(
+      body: RefreshIndicator(
+        onRefresh: () async {
+      setState(() {});
+    },
+    child:
+      Column(
         children: [
           SizedBox(height: 80,),
           Align(
@@ -174,7 +190,11 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                                         size: 20,
                                                       ),
                                                       SizedBox(width: 5),
-                                                      Text('${(place['point'])?.toDouble() ?? 0.0}'),
+                                                      place['point'] == 0 ? Text('─', style: TextStyle(color: Colors.brown),) :
+                                                      Text(
+                                                        '${((place['point'] as num?)?.toDouble() ?? 0.0).toStringAsFixed(1)}',
+                                                        style: TextStyle(color: Colors.brown),
+                                                      ),
                                                     ],
                                                   ),
                                                 ),
@@ -229,6 +249,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           ),
         ],
       ),
+      )
     );
   }
 }

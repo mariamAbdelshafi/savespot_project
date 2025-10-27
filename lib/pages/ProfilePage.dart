@@ -3,11 +3,17 @@ import 'package:savespot_project/pages/FavoritesPage.dart';
 import 'package:savespot_project/pages/MyCommentsPage.dart';
 import 'package:savespot_project/pages/StartPage.dart';
 import 'package:savespot_project/pages/InformationPage.dart';
-import 'package:savespot_project/pages/BottomBar.dart';
 
-class ProfilePage extends StatelessWidget{
-  const ProfilePage({super.key});
+class ProfilePage extends StatefulWidget{
+  final Function(int)? onChangePage;
+  final VoidCallback? onLogout;
+  const ProfilePage({Key? key, this.onChangePage, this.onLogout}) : super(key: key);
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context){
     return Scaffold(
@@ -31,7 +37,7 @@ class ProfilePage extends StatelessWidget{
             SizedBox(height: 100),
             ElevatedButton(
               onPressed: (){
-                //go to information page
+                //go to info page
                 Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => InformationPage())
@@ -95,8 +101,10 @@ class ProfilePage extends StatelessWidget{
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: (){
-                //log out back to start page
-                Navigator.push(
+                if (widget.onLogout != null) {
+                  widget.onLogout!();
+                }
+                Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => StartPage())
                 );

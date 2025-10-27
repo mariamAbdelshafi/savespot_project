@@ -264,7 +264,6 @@ class _RegisterPageState extends State<RegisterPage>{
                                 'createdAt': Timestamp.now(),
                               });
 
-                              // Redirection si tout se passe bien
                               Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(

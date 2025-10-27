@@ -135,7 +135,6 @@ class _LoginPageState extends State<LoginPage>{
                         ),
                         TextButton(
                             onPressed: () {
-                              //reset password
                               showDialog(
                                   context: context,
                                   builder: (BuildContext context) {
@@ -236,7 +235,6 @@ class _LoginPageState extends State<LoginPage>{
                           ),),
                         TextButton(
                             onPressed: (){
-                              //register page
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(builder: (context) => RegisterPage())

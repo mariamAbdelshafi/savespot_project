@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:savespot_project/pages/PlacesPage.dart';
@@ -10,23 +11,119 @@ class SearchResultpage extends StatefulWidget {
     required this.category
   });
 
+  get placeId => null;
+
   @override
   State<SearchResultpage> createState() => _SearchResultpageState();
 }
 
 class _SearchResultpageState extends State<SearchResultpage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late Set<String> favoritePlaceIds = {};
+  final String? userId = FirebaseAuth.instance.currentUser?.uid;
 
-  Future<List<Map<String, dynamic>>> fetchPlaces() async {
+  Stream<List<Map<String, dynamic>>> getLastSeenStream() {
+    if (userId == null) return Stream.value([]);
+
+    return _firestore.collection('users').doc(userId!).snapshots().map((snapshot) {
+      final data = snapshot.data() ?? {};
+      final rawList = data['lastSeen'] as List? ?? [];
+
+      return rawList
+          .map((item) => Map<String, dynamic>.from(item))
+          .where((place) => place['name'] != null && place['name'] != 'Unknown')
+          .toList();
+    });
+  }
+
+  Future<bool> updateLastSeenPlace({
+    required String placeId,
+    required String name,
+    required List<String> images,
+    required String address,
+    required String description,
+    required String phoneNumber,
+    required String emailAddress,
+    required double avgRating,
+  }) async {
+    if (userId == null || !mounted) return false;
+
+    try {
+      final userRef = _firestore.collection('users').doc(userId!);
+      final placeData = {
+        'id': placeId,
+        'name': name,
+        'images': images,
+        'address': address,
+        'description': description,
+        'phoneNumber': phoneNumber,
+        'emailAddress': emailAddress,
+        'avgRating': avgRating,
+        'clickedAt': DateTime.now().toIso8601String(),
+      };
+
+      await _firestore.runTransaction((transaction) async {
+        final doc = await transaction.get(userRef);
+        List<dynamic> current = List.from(doc.data()?['lastSeen'] ?? []);
+
+        current.removeWhere((item) => item['id'] == placeId);
+        current.insert(0, placeData);
+        if (current.length > 5) current = current.sublist(0, 5);
+
+        transaction.update(userRef, {'lastSeen': current});
+      });
+      return true;
+    } catch (e) {
+      print('Error in transaction for place $placeId: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Error updating last seen")),
+        );
+      }
+      return false;
+    }
+  }
+
+  Stream<List<Map<String, dynamic>>> getPlacesStream() {
     Query query = _firestore.collection('Places');
     if (widget.category.isNotEmpty) {
       query = query.where('category', isEqualTo: widget.category);
     }
-    QuerySnapshot snapshot = await query.get();
-    return snapshot.docs.map((doc) => {
-      ...doc.data() as Map<String, dynamic>,
-      'id': doc.id,
-    }).toList();
+
+    return query.snapshots().asyncMap((snapshot) async {
+      final places = <Map<String, dynamic>>[];
+
+      for (final doc in snapshot.docs) {
+        final data = doc.data() as Map<String, dynamic>;
+        final placeId = doc.id;
+
+        final commentsSnapshot = await _firestore
+            .collection('comments')
+            .where('placeId', isEqualTo: placeId)
+            .get();
+
+        double avgRating = 0.0;
+        if (commentsSnapshot.docs.isNotEmpty) {
+          final total = commentsSnapshot.docs.fold(0.0, (sum, doc) => sum + (doc.data()['rating'] as num).toDouble());
+          avgRating = total / commentsSnapshot.docs.length;
+        }
+
+        places.add({
+          ...data,
+          'id': placeId,
+          'point': avgRating,
+          'numberComments': commentsSnapshot.docs.length,
+        });
+      }
+
+      return places;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getLastSeenStream().listen((_) {});
   }
 
   @override
@@ -35,10 +132,9 @@ class _SearchResultpageState extends State<SearchResultpage> {
       backgroundColor: Colors.brown[50],
       body: Column(
         children: [
-          SizedBox(height: 10,),
           Center(
-            child: FutureBuilder<List<Map<String, dynamic>>>(
-              future: fetchPlaces(),
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: getPlacesStream(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return CircularProgressIndicator();
@@ -49,7 +145,21 @@ class _SearchResultpageState extends State<SearchResultpage> {
                 if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return Column(
                     children: [
-                      SizedBox(height: 200,),
+                      SizedBox(height: 40),
+                      Row(
+                        children: [
+                          Spacer(),
+                          IconButton(
+                              onPressed: (){
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(Icons.close,
+                                  color: Colors.brown[800],
+                                  size: 30)),
+                          SizedBox(width: 20)
+                        ],
+                      ),
+                      SizedBox(height: 150),
                       Text('No places found'),
                     ],
                   );
@@ -59,36 +169,61 @@ class _SearchResultpageState extends State<SearchResultpage> {
 
                 return SingleChildScrollView(
                   scrollDirection: Axis.vertical,
-                  child:
-                  Column(
+                  child: Column(
                     children: [
-                      SizedBox(height: 70),
+                      SizedBox(height: 30),
+                      Row(
+                        children: [
+                          Spacer(),
+                          IconButton(
+                              onPressed: (){
+                                Navigator.pop(context);
+                              },
+                              icon: Icon(Icons.close,
+                                  color: Colors.brown[800],
+                                  size: 30)),
+                          SizedBox(width: 20)
+                        ],
+                      ),
+                      SizedBox(height: 10),
+
                       for (var place in places) ...[
                         Row(
                           children: [
                             SizedBox(width: 20),
                             InkWell(
-                              onTap: (){
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PlacesPage(
-                                      placeId: place['id'],
-                                      name: place['name'] ?? 'Unknown',
-                                      address: place['address'] ?? 'Unknown',
-                                      description: place['description'] ?? 'Unknown',
-                                      phoneNumber: place['phoneNumber'] ?? 'Unknown',
-                                      emailAddress: place['email'] ?? 'Unknown',
-                                      avgRating: (place['point'] as num?)?.toDouble() ?? 0.0,
-                                      images: (place['images'] as List?)?.cast<String>() ?? ['assets/placeholder_image.jpg'],
-                                      favorite: place['favorite'] ?? false,
-                                    ),
-                                  ),
+                              onTap: () async {
+                                final success = await updateLastSeenPlace(
+                                  placeId: place['id'],
+                                  name: place['name'] ?? 'Unknown',
+                                  images: (place['images'] as List?)?.cast<String>() ?? ['assets/placeholder_image.jpg'],
+                                  address: place['address'] ?? 'Unknown',
+                                  description: place['description'] ?? 'Unknown',
+                                  phoneNumber: place['phoneNumber'] ?? 'Unknown',
+                                  emailAddress: place['email'] ?? 'Unknown',
+                                  avgRating: (place['point'] as num?)?.toDouble() ?? 0.0,
                                 );
-                              },
 
-                              child:
-                              Stack(
+                                if (success && mounted) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => PlacesPage(
+                                        placeId: place['id'],
+                                        name: place['name'] ?? 'Unknown',
+                                        address: place['address'] ?? 'Unknown',
+                                        description: place['description'] ?? 'Unknown',
+                                        phoneNumber: place['phoneNumber'] ?? 'Unknown',
+                                        emailAddress: place['email'] ?? 'Unknown',
+                                        avgRating: (place['point'] as num?)?.toDouble() ?? 0.0,
+                                        images: (place['images'] as List?)?.cast<String>() ?? ['assets/placeholder_image.jpg'],
+                                        favorite: place['favorite'] ?? false,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Stack(
                                 children: [
                                   Container(
                                     width: 350,
@@ -153,7 +288,12 @@ class _SearchResultpageState extends State<SearchResultpage> {
                                                         size: 20,
                                                       ),
                                                       SizedBox(width: 5),
-                                                      Text('${(place['point'])?.toDouble() ?? 0.0}'),
+                                                      place['point'] == 0
+                                                          ? Text('─', style: TextStyle(color: Colors.brown))
+                                                          : Text(
+                                                        (place['point'] as double).toStringAsFixed(1),
+                                                        style: TextStyle(color: Colors.brown),
+                                                      ),
                                                     ],
                                                   ),
                                                 ),
@@ -179,9 +319,9 @@ class _SearchResultpageState extends State<SearchResultpage> {
                                         child: Image.network(
                                           place['images'] != null && place['images'].isNotEmpty
                                               ? place['images'][0]
-                                              : 'https://example.com/placeholder.jpg',
+                                              : '',
                                           fit: BoxFit.cover,
-                                          width : 80,
+                                          width: 80,
                                           height: 80,
                                           errorBuilder: (context, error, stackTrace) {
                                             return Icon(
@@ -196,7 +336,6 @@ class _SearchResultpageState extends State<SearchResultpage> {
                                 ],
                               ),
                             )
-
                           ],
                         ),
                         SizedBox(height: 20),

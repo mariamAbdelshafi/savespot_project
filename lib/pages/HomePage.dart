@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:savespot_project/pages/BottomBar.dart';
-import 'package:savespot_project/pages/ProfilePage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:savespot_project/pages/PlacesPage.dart';
-import 'package:savespot_project/pages/SearchPage.dart';
 import 'package:savespot_project/pages/SearchResultPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -177,6 +174,20 @@ class _HomePageState extends State<HomePage> {
       });
       return true;
     }
+  }
+
+  Stream<List<Map<String, dynamic>>> getLastSeenStream() {
+    if (userId == null) return Stream.value([]);
+
+    return _firestore.collection('users').doc(userId!).snapshots().map((snapshot) {
+      final data = snapshot.data() ?? {};
+      final rawList = data['lastSeen'] as List? ?? [];
+
+      return rawList
+          .map((item) => Map<String, dynamic>.from(item))
+          .where((place) => place['name'] != null && place['name'] != 'Unknown')
+          .toList();
+    });
   }
 
 
@@ -589,7 +600,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             SizedBox(width: 20),
             Text(
-              'Last seen',
+              'Recently viewed',
               style: TextStyle(
                 color: Colors.brown,
                 fontSize: 25,
@@ -599,109 +610,128 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
         SizedBox(height: 10),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: [ ...lastSeenPlaces.map((place) {
-              final placeId = place['id'] ?? '';
-              final name = place['name'] ?? 'Unknown';
-              final images = (place['images'] as List<dynamic>?)
-                  ?.map((e) => e.toString())
-                  .toList() ??
-                  [];
-              final address = place['address'] ?? '';
-              final description = place['description'] ?? '';
-              final phoneNumber = place['phoneNumber'] ?? '';
-              final emailAddress = place['emailAddress'] ?? '';
-              final avgRating = (place['avgRating'] as num?)?.toDouble() ?? 0.0;
-              final favorite = favoritePlaceIds.contains(placeId);
+        StreamBuilder<List<Map<String, dynamic>>>(
+          stream: getLastSeenStream(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return Center(child: Text('Error loading last seen places'));
+            }
+            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return Center(child: Text('No recently viewed places'));
+            }
 
-              return Padding(
-                padding: EdgeInsets.only(left: 20),
-                child: InkWell(
-                  onTap: () async {
-                    await updateLastSeenPlace(
-                      placeId: placeId,
-                      name: name,
-                      images: images,
-                      address: address,
-                      description: description,
-                      phoneNumber: phoneNumber,
-                      emailAddress: emailAddress,
-                      avgRating: avgRating,
-                    );
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PlacesPage(
-                          placeId: placeId,
-                          name: name,
-                          address: address,
-                          description: description,
-                          phoneNumber: phoneNumber,
-                          emailAddress: emailAddress,
-                          avgRating: avgRating,
-                          images: images,
-                          favorite: favorite,
-                          onFavoriteChanged: () async {
-                            await loadUserFavorites();
-                            setState(() {});
-                          },
+            final lastSeenPlaces = snapshot.data!;
+
+            return SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  ...lastSeenPlaces.map((place) {
+                    final placeId = place['id'] ?? '';
+                    final name = place['name'] ?? 'Unknown';
+                    final images = (place['images'] as List<dynamic>?)
+                        ?.map((e) => e.toString())
+                        .toList() ??
+                        [];
+                    final address = place['address'] ?? '';
+                    final description = place['description'] ?? '';
+                    final phoneNumber = place['phoneNumber'] ?? '';
+                    final emailAddress = place['emailAddress'] ?? '';
+                    final avgRating = (place['avgRating'] as num?)?.toDouble() ?? 0.0;
+                    final favorite = favoritePlaceIds.contains(placeId);
+
+                    return Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: InkWell(
+                        onTap: () async {
+                          await updateLastSeenPlace(
+                            placeId: placeId,
+                            name: name,
+                            images: images,
+                            address: address,
+                            description: description,
+                            phoneNumber: phoneNumber,
+                            emailAddress: emailAddress,
+                            avgRating: avgRating,
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PlacesPage(
+                                placeId: placeId,
+                                name: name,
+                                address: address,
+                                description: description,
+                                phoneNumber: phoneNumber,
+                                emailAddress: emailAddress,
+                                avgRating: avgRating,
+                                images: images,
+                                favorite: favorite,
+                                onFavoriteChanged: () async {
+                                  await loadUserFavorites();
+                                  if (mounted) setState(() {});
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(20),
+                        child: Container(
+                          width: 200,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.brown[100],
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            children: [
+                              // Image du lieu
+                              Container(
+                                width: 70,
+                                height: 70,
+                                margin: EdgeInsets.only(left: 5),
+                                decoration: BoxDecoration(
+                                  color: Colors.brown[200],
+                                  borderRadius: BorderRadius.circular(15),
+                                  image: images.isNotEmpty
+                                      ? DecorationImage(
+                                    image: NetworkImage(images[0]),
+                                    fit: BoxFit.cover,
+                                  )
+                                      : null,
+                                ),
+                                child: images.isEmpty
+                                    ? Icon(Icons.place, color: Colors.brown[800])
+                                    : null,
+                              ),
+                              SizedBox(width: 10),
+                              // Nom du lieu
+                              Expanded(
+                                child: Text(
+                                  name,
+                                  style: TextStyle(
+                                    color: Colors.brown[800],
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
-                  },
-                  borderRadius: BorderRadius.circular(20),
-                  child: Container(
-                    width: 200,
-                    height: 80,
-                    decoration: BoxDecoration(
-                      color: Colors.brown[100],
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 5),
-                            child: Container(
-                              width: 70,
-                              height: 70,
-                              decoration: BoxDecoration(
-                                color: Colors.brown[200],
-                                borderRadius: BorderRadius.circular(20),
-                                image: images.isNotEmpty
-                                    ? DecorationImage(
-                                  image: NetworkImage(images[0]),
-                                  fit: BoxFit.cover,
-                                )
-                                    : null,
-                              ),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: 10),
-                        Flexible(
-                          child: Text(
-                            name,
-                            style: TextStyle(
-                              color: Colors.brown,
-                              fontSize: 18,
-                            ),
-                            softWrap: true,
-                            overflow: TextOverflow.visible,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-              SizedBox(width: 10,)
-            ]
-          ),
+                  }).toList(),
+                  SizedBox(width: 20), // Espace à la fin
+                ],
+              ),
+            );
+          },
         )
         ,
       ],
